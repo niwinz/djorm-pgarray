@@ -3,6 +3,13 @@
 from django.db import models
 from django.utils.encoding import force_unicode
 
+def _cast_to_unicode(data):
+    if isinstance(data, (list, tuple)):
+        return [_cast_to_unicode(x) for x in data]
+    elif isinstance(data, str):
+        return force_unicode(data)
+    return data
+
 
 class ArrayField(models.Field):
     __metaclass__ = models.SubfieldBase
@@ -23,19 +30,13 @@ class ArrayField(models.Field):
         if not value or isinstance(value, basestring):
             return value
 
-        if self._array_type in ('text') or "varchar" in self._array_type:
-            value = map(force_unicode, value)
-
         return value
 
     def get_prep_value(self, value):
         return value
 
     def to_python(self, value):
-        if value and isinstance(value, (list,tuple)):
-            if self._array_type in ('text') or "varchar" in self._array_type:
-                return map(force_unicode, value)
-        return value
+        return _cast_to_unicode(value)
 
 
 # South support

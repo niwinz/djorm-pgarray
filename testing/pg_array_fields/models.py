@@ -18,3 +18,8 @@ class TextModel(models.Model):
 class DoubleModel(models.Model):
     lista = ArrayField(dbtype='double precision')
     objects = ExpressionManager()
+
+
+class MTextModel(models.Model):
+    data = ArrayField(dbtype="text", dimension=2)
+    objects = ExpressionManager()

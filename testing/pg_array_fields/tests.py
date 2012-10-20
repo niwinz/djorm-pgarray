@@ -3,7 +3,7 @@
 from django.test import TestCase
 
 from djorm_expressions.base import SqlExpression
-from .models import IntModel, TextModel, DoubleModel
+from .models import IntModel, TextModel, DoubleModel, MTextModel
 
 class ArrayFieldTests(TestCase):
     def setUp(self):
@@ -39,3 +39,13 @@ class ArrayFieldTests(TestCase):
             SqlExpression("lista", "@>", [u"Пример"])
         )
         self.assertEqual(queryset.count(), 1)
+
+    def test_correct_behavior_with_text_arrays_01(self):
+        obj = TextModel.objects.create(lista=[[1,2],[3,4]])
+        obj = TextModel.objects.get(pk=obj.pk)
+        self.assertEqual(obj.lista, [[u'1', u'2'], [u'3', u'4']])
+
+    def test_correct_behavior_with_text_arrays_02(self):
+        obj = MTextModel.objects.create(data=[[u"1",u"2"],[u"3",u"ñ"]])
+        obj = MTextModel.objects.get(pk=obj.pk)
+        self.assertEqual(obj.data, [[u"1",u"2"],[u"3",u"ñ"]])
