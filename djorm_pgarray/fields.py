@@ -84,7 +84,7 @@ class ArrayFormField(forms.Field):
     def clean(self, value):
         try:
             return value.split(self.delim)
-        except:
+        except Exception:
             raise ValidationError(self.error_messages['invalid'])
 
     def prepare_value(self, value):
