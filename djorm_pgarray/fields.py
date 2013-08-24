@@ -1,13 +1,22 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import json
 
+from django import forms
+from django.core.exceptions import ValidationError
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.utils import six
 from django.utils.encoding import force_text
-from django import forms
 from django.utils.translation import ugettext_lazy as _
-from django.core.exceptions import ValidationError
+
+
+TYPES = {
+    'int': int,
+    'text': str,
+    'double precision': float,
+}
 
 
 def _cast_to_unicode(data):
@@ -26,11 +35,14 @@ def _cast_to_type(data, type_cast):
     return type_cast(data)
 
 
-TYPES = {
-    'int': int,
-    'text': str,
-    'double precision': float,
-}
+def _unserialize(value):
+    if not isinstance(value, six.string_types):
+        return _cast_to_unicode(value)
+
+    try:
+        return _cast_to_unicode(json.loads(value))
+    except ValueError:
+        return _cast_to_unicode(value)
 
 
 class ArrayField(models.Field):
@@ -64,11 +76,12 @@ class ArrayField(models.Field):
         return value
 
     def to_python(self, value):
-        return _cast_to_unicode(value)
+        return _unserialize(value)
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
-        return self.get_prep_value(value)
+        return json.dumps(self.get_prep_value(value),
+                          cls=DjangoJSONEncoder)
 
 # South support
 try:
