@@ -126,7 +126,7 @@ class ArrayFormFieldTests(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_empty_value(self):
-        form = IntArrayFrom({'lista':u''})
+        form = IntArrayForm({'lista':u''})
         self.assertTrue(form.is_valid())
         self.assertEqual(form.cleaned_data['lista'], [])
 
