@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 0.8
+-----------
+
+- Bugfixes
+- Sphinx documentation
+
 Version 0.7
 -----------
 
