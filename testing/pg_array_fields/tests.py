@@ -5,7 +5,6 @@ from django.test import TestCase
 from django.core.serializers import serialize, deserialize
 
 from djorm_expressions.base import SqlExpression
-from djorm_pgarray.fields import ArrayFormField
 
 from .models import IntModel, TextModel, DoubleModel, MTextModel, MultiTypeModel
 from .forms import IntArrayForm
