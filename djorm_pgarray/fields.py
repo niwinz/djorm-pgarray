@@ -88,6 +88,11 @@ class ArrayField(models.Field):
         return json.dumps(self.get_prep_value(value),
                           cls=DjangoJSONEncoder)
 
+    def validate(self, value, model_instance):
+        for val in value:
+            super(ArrayField, self).validate(val, model_instance)
+
+
 # South support
 try:
     from south.modelsinspector import add_introspection_rules
