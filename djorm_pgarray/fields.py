@@ -65,7 +65,7 @@ class ArrayField(models.Field):
         super(ArrayField, self).__init__(*args, **kwargs)
 
     def formfield(self, **params):
-        params['form_class'] = ArrayFormField
+        params.setdefault('form_class', ArrayFormField)
         return super(ArrayField, self).formfield(**params)
 
     def db_type(self, connection):
