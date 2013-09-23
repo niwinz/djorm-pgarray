@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 0.9
+-----------
+
+- Allow user override of form field class (Carl Meyer)
+
 Version 0.8
 -----------
 
