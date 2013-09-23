@@ -53,9 +53,11 @@ class ArrayField(models.Field):
         self._array_type = kwargs.pop('dbtype', 'int')
         type_key = self._array_type.split('(')[0]
 
-        try:
+        if "type_cast" in kwargs:
+            self._type_cast = kwargs.pop("type_cast")
+        elif type_key in TYPES:
             self._type_cast = TYPES[type_key]
-        except KeyError:
+        else:
             raise TypeError('invalid postgreSQL type: %s' % self._array_type)
 
         self._dimension = kwargs.pop('dimension', 1)

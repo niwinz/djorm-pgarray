@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-from django.contrib.admin import AdminSite, ModelAdmin
 
-from django.test import TestCase
+from django.contrib.admin import AdminSite, ModelAdmin
 from django.core.serializers import serialize, deserialize
+from django.test import TestCase
 
 from djorm_expressions.base import SqlExpression
 from djorm_pgarray.fields import ArrayField
 
-from .models import (
-    IntModel, TextModel, DoubleModel, MTextModel, MultiTypeModel, ChoicesModel)
 from .forms import IntArrayForm
+from .models import (IntModel, TextModel, DoubleModel, MTextModel,
+                     MultiTypeModel, ChoicesModel, MacAddrModel)
 
 
 class ArrayFieldTests(TestCase):
@@ -23,6 +23,14 @@ class ArrayFieldTests(TestCase):
         instance = IntModel.objects.create(lista=[])
         instance = IntModel.objects.get(pk=instance.pk)
         self.assertEqual(instance.lista, [])
+
+    def test_macaddr_model(self):
+        instance = MacAddrModel.objects.create()
+        instance.lista = ['00:24:d6:54:ff:c6', '00:24:d6:54:ff:c4']
+        instance.save()
+
+        instance = MacAddrModel.objects.get(pk=instance.pk)
+        self.assertEqual(instance.lista, ['00:24:d6:54:ff:c6', '00:24:d6:54:ff:c4'])
 
     def test_overlap(self):
         obj1 = IntModel.objects.create(lista=[1,2,3])
@@ -38,6 +46,7 @@ class ArrayFieldTests(TestCase):
             SqlExpression("lista", "&&", [1,2,3])
         )
         self.assertEqual(queryset.count(), 2)
+
 
     def test_contains_unicode(self):
         obj = TextModel.objects\

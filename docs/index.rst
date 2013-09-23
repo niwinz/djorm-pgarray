@@ -50,6 +50,26 @@ This is a sample example of creating objects with array fields.
     <Register2: Register2 object>
 
 
+Using custom PostgreSQL data types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Some times we need use some other data types that postgresql offers for make arrays and
+djorm-ext-pgarray does not offers builtin support for it. Now, djorm-ext-pgarray
+supports a simple way to extend it:
+
+.. code-block:: python
+
+    class Register(models.Model):
+        name = models.CharField(max_length=200)
+        macs = ArrayField(dbtype="macaddr", type_cast=lambda x: str(x))
+        # Same as previous line but uses str as callback directly
+        # macs = ArrayField(dbtype="macaddr", type_cast=str)
+        objects = ExpressionManager()
+
+If type_cast patameter is not None, ArrayField ignores the no existence of a builtin
+cast function for some type and use a function passed throught type_cast argument.
+
+
 How install it?
 ---------------
 

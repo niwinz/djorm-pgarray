@@ -15,6 +15,11 @@ class TextModel(models.Model):
     objects = ExpressionManager()
 
 
+class MacAddrModel(models.Model):
+    lista = ArrayField(dbtype='macaddr', type_cast=str)
+    objects = ExpressionManager()
+
+
 class DoubleModel(models.Model):
     lista = ArrayField(dbtype='double precision')
     objects = ExpressionManager()
