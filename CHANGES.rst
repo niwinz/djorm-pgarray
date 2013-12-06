@@ -5,6 +5,7 @@ Version 0.9
 -----------
 
 - Allow user override of form field class (Carl Meyer)
+- Allow use self defined types.
 
 Version 0.8
 -----------
