@@ -59,7 +59,7 @@ class ArrayField(models.Field):
         elif type_key in TYPES:
             self._type_cast = TYPES[type_key]
         else:
-            raise TypeError('invalid postgreSQL type: %s' % self._array_type)
+            self._type_cast = lambda x: x
 
         self._dimension = kwargs.pop('dimension', 1)
         kwargs.setdefault('blank', True)

@@ -2,6 +2,7 @@
 
 from django.contrib.admin import AdminSite, ModelAdmin
 from django.core.serializers import serialize, deserialize
+from django.db import connection
 from django.test import TestCase
 
 from djorm_expressions.base import SqlExpression
@@ -10,6 +11,43 @@ from djorm_pgarray.fields import ArrayField
 from .forms import IntArrayForm
 from .models import (IntModel, TextModel, DoubleModel, MTextModel,
                      MultiTypeModel, ChoicesModel, MacAddrModel)
+
+import psycopg2.extensions
+
+class MacAddr(str):
+    pass
+
+
+def get_type_oid(sql_expression):
+    """Query the database for the OID of the type of sql_expression."""
+    cursor = connection.cursor()
+    try:
+        cursor.execute("SELECT " + sql_expression)
+        return cursor.description[0][1]
+    finally:
+        cursor.close()
+
+def cast_macaddr(val, cur):
+    return MacAddr(val)
+
+
+def adapt_macaddr(maddr):
+    from psycopg2.extensions import adapt, AsIs
+    return AsIs("{0}::macaddr".format(adapt(str(maddr))))
+
+
+def register_macaddr_type():
+    from psycopg2.extensions import register_adapter, new_type, register_type, new_array_type
+    import psycopg2
+
+    oid = get_type_oid("NULL::macaddr")
+    PGTYPE = new_type((oid,), "macaddr", cast_macaddr)
+    register_type(PGTYPE)
+    register_adapter(MacAddr, adapt_macaddr)
+
+    mac_array_oid = get_type_oid("'{}'::macaddr[]")
+    array_of_mac = new_array_type((mac_array_oid, ), 'macaddr', psycopg2.STRING)
+    psycopg2.extensions.register_type(array_of_mac)
 
 
 class ArrayFieldTests(TestCase):
@@ -25,8 +63,9 @@ class ArrayFieldTests(TestCase):
         self.assertEqual(instance.lista, [])
 
     def test_macaddr_model(self):
+        register_macaddr_type()
         instance = MacAddrModel.objects.create()
-        instance.lista = ['00:24:d6:54:ff:c6', '00:24:d6:54:ff:c4']
+        instance.lista = [MacAddr('00:24:d6:54:ff:c6'), MacAddr('00:24:d6:54:ff:c4')]
         instance.save()
 
         instance = MacAddrModel.objects.get(pk=instance.pk)
