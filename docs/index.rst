@@ -82,3 +82,10 @@ command. Or use a pip, for install it from Python Package Index.
 
 Additionally, you can install djorm-ext-expressions, that can help with complex queries
 using array fields.
+
+
+Known issues
+------------
+
+- Querysets using expressions package can not be used as subqueries. Because alias
+  propagation is not working properly.

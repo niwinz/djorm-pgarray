@@ -3,6 +3,23 @@
 from django.db import models
 from djorm_pgarray.fields import ArrayField
 from djorm_expressions.models import ExpressionManager
+from djorm_expressions.base import SqlExpression
+
+
+class ArrayExpression(object):
+    def __init__(self, field):
+        self.field = field
+
+    def contains(self, value):
+        return SqlExpression(self.field, "@>", value)
+
+    def overlap(self, value):
+        return SqlExpression(self.field, "&&", value)
+
+
+class Item(models.Model):
+    tags = ArrayField(dbtype="text")
+    objects = ExpressionManager()
 
 
 class IntModel(models.Model):

@@ -9,8 +9,15 @@ from djorm_expressions.base import SqlExpression
 from djorm_pgarray.fields import ArrayField
 
 from .forms import IntArrayForm
-from .models import (IntModel, TextModel, DoubleModel, MTextModel,
-                     MultiTypeModel, ChoicesModel, MacAddrModel)
+from .models import (IntModel,
+                     TextModel,
+                     DoubleModel,
+                     MTextModel,
+                     MultiTypeModel,
+                     ChoicesModel,
+                     Item,
+                     ArrayExpression,
+                     MacAddrModel)
 
 import psycopg2.extensions
 
@@ -56,6 +63,21 @@ class ArrayFieldTests(TestCase):
         TextModel.objects.all().delete()
         DoubleModel.objects.all().delete()
         MultiTypeModel.objects.all().delete()
+
+    def test_subquery(self):
+        # TEST case for wrong alias use on queryset is
+        # used as subquery.
+
+        # TODO: this is unfinished and unfixed.
+        items = [Item.objects.create(tags=["foo{}".format(i)])
+                for i in range(10)]
+
+        parts = ['foo1']
+        qs1 = Item.objects.where(ArrayExpression("tags").contains(parts))
+        self.assertEqual(qs1.count(), 1)
+
+        qs2 = Item.objects.filter(id__in=qs1.values('id'))
+        # print(qs2.query.__str__())
 
     def test_empty_create(self):
         instance = IntModel.objects.create(lista=[])
