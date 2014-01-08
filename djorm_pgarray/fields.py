@@ -118,13 +118,12 @@ class ArrayFormField(forms.Field):
         'invalid': _('Enter a list of values, joined by commas.  E.g. "a,b,c".'),
     }
 
-    def __init__(
-            self, max_length=None, min_length=None, delim=None,
-            *args, **kwargs):
+    def __init__(self, max_length=None, min_length=None, delim=None,
+                 *args, **kwargs):
         if delim is not None:
             self.delim = delim
         else:
-            self.delim = ','
+            self.delim = u','
         super(ArrayFormField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
@@ -140,9 +139,9 @@ class ArrayFormField(forms.Field):
 
     def prepare_value(self, value):
         if value:
-            return self.delim.join(str(v) for v in value)
-        else:
-            return super(ArrayFormField, self).prepare_value(value)
+            return self.delim.join(force_text(v) for v in value)
+
+        return super(ArrayFormField, self).prepare_value(value)
 
     def to_python(self, value):
         return value.split(self.delim)

@@ -6,7 +6,7 @@ from django.db import connection
 from django.test import TestCase
 
 from djorm_expressions.base import SqlExpression
-from djorm_pgarray.fields import ArrayField
+from djorm_pgarray.fields import ArrayField, ArrayFormField
 
 from .forms import IntArrayForm
 from .models import (IntModel,
@@ -224,6 +224,11 @@ class ArrayFormFieldTests(TestCase):
             form_instance.as_table()
         except TypeError:
             self.fail('HTML Rendering of the form caused a TypeError')
+
+    def test_unicode_data(self):
+        field = ArrayFormField()
+        result = field.prepare_value([u"Клиент",u"こんにちは"])
+        self.assertEqual(result, u"Клиент,こんにちは")
 
     def test_invalid_error(self):
         form = IntArrayForm({'lista':1})
