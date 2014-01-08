@@ -52,6 +52,15 @@ class MultiTypeModel(models.Model):
     varchars = ArrayField(dbtype="varchar(30)")
     objects = ExpressionManager()
 
+class DateModel(models.Model):
+    dates = ArrayField(dbtype="date")
+    objects = ExpressionManager()
+
+
+class DateTimeModel(models.Model):
+    dates = ArrayField(dbtype="timestamp")
+    objects = ExpressionManager()
+
 
 class ChoicesModel(models.Model):
     choices = ArrayField(dbtype='text', choices=[('A', 'A'), ('B', 'B')])

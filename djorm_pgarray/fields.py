@@ -18,6 +18,8 @@ TYPES = {
     'text': str,
     'double precision': float,
     'varchar': str,
+    'date': lambda x: x,
+    'datetime': lambda x: x,
 }
 
 

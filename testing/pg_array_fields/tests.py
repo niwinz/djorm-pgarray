@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+
 from django.contrib.admin import AdminSite, ModelAdmin
 from django.core.serializers import serialize, deserialize
 from django.db import connection
@@ -16,6 +18,8 @@ from .models import (IntModel,
                      MultiTypeModel,
                      ChoicesModel,
                      Item,
+                     DateModel,
+                     DateTimeModel,
                      ArrayExpression,
                      MacAddrModel)
 
@@ -78,6 +82,21 @@ class ArrayFieldTests(TestCase):
 
         qs2 = Item.objects.filter(id__in=qs1.values('id'))
         # print(qs2.query.__str__())
+
+    def test_date(self):
+        d = datetime.date(2011, 11, 11)
+        instance = DateModel.objects.create(dates=[d])
+
+        instance = DateModel.objects.get(pk=instance.pk)
+        self.assertEqual(instance.dates[0], d)
+
+
+    def test_datetime(self):
+        d = datetime.datetime(2011, 11, 11, 11, 11, 11)
+        instance = DateTimeModel.objects.create(dates=[d])
+        instance = DateTimeModel.objects.get(pk=instance.pk)
+        self.assertEqual(instance.dates[0], d)
+
 
     def test_empty_create(self):
         instance = IntModel.objects.create(lista=[])
