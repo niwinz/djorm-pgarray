@@ -66,6 +66,13 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         kwargs.setdefault('default', None)
         super(ArrayField, self).__init__(*args, **kwargs)
 
+    def deconstruct(self):
+        name, path, args, kwargs = super(ArrayField, self).deconstruct()
+        kwargs["dbtype"] = self._array_type
+        kwargs["type_cast"] = self._type_cast
+        kwargs["dimension"] = self._dimension
+        return name, path, args, kwargs
+
     def formfield(self, **params):
         params.setdefault('form_class', ArrayFormField)
         return super(ArrayField, self).formfield(**params)
