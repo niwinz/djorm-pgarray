@@ -3,14 +3,14 @@ djorm-ext-pgarray
 
 PostgreSQL array field for Django.
 
-- **Blog post:** http://www.niwi.be/2012/10/07/postgresql-array-fields-with-django/
-
 Introduction
 ------------
 
 Django by default, has a large collection of possible types that can be used to define the
 model. But sometimes we need to use some more complex types offered by PostgreSQL. In this
 case, we will look the integrating of PostgreSQL array with Django.
+
+Django version support: 1.5, 1.6, 1.7
 
 Quickstart
 ----------
@@ -80,11 +80,3 @@ command. Or use a pip, for install it from Python Package Index.
 
 Additionally, you can install djorm-ext-expressions, that can help with complex queries
 using array fields.
-
-
-Known issues
-------------
-
-- Querysets using expressions package can not be used as subqueries. Because alias
-  propagation is not working properly. It will be fixed with django 1.7 and custom
-  lookups.
