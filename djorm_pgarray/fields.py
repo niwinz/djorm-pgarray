@@ -42,16 +42,13 @@ def _cast_to_type(data, type_cast):
 def _unserialize(value):
     if not isinstance(value, six.string_types):
         return _cast_to_unicode(value)
-
     try:
         return _cast_to_unicode(json.loads(value))
     except ValueError:
         return _cast_to_unicode(value)
 
 
-class ArrayField(models.Field):
-    __metaclass__ = models.SubfieldBase
-
+class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     def __init__(self, *args, **kwargs):
         self._array_type = kwargs.pop('dbtype', 'int')
         type_key = self._array_type.split('(')[0]

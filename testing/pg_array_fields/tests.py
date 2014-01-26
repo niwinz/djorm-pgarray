@@ -18,6 +18,7 @@ from .models import (IntModel,
                      MultiTypeModel,
                      ChoicesModel,
                      Item,
+                     Item2,
                      DateModel,
                      DateTimeModel,
                      ArrayExpression,
@@ -68,20 +69,28 @@ class ArrayFieldTests(TestCase):
         DoubleModel.objects.all().delete()
         MultiTypeModel.objects.all().delete()
 
-    def test_subquery(self):
-        # TEST case for wrong alias use on queryset is
-        # used as subquery.
+    def test_default_value_1(self):
+        obj = Item.objects.create()
+        self.assertEqual(obj.tags, [])
 
-        # TODO: this is unfinished and unfixed.
-        items = [Item.objects.create(tags=["foo{}".format(i)])
-                for i in range(10)]
+    def test_default_value_2(self):
+        obj = Item2.objects.create()
+        self.assertEqual(obj.tags, [])
 
-        parts = ['foo1']
-        qs1 = Item.objects.where(ArrayExpression("tags").contains(parts))
-        self.assertEqual(qs1.count(), 1)
+    # def test_subquery(self):
+    #     # TEST case for wrong alias use on queryset is
+    #     # used as subquery.
 
-        qs2 = Item.objects.filter(id__in=qs1.values('id'))
-        # print(qs2.query.__str__())
+    #     # TODO: this is unfinished and unfixed.
+    #     items = [Item.objects.create(tags=["foo{}".format(i)])
+    #             for i in range(10)]
+
+    #     parts = ['foo1']
+    #     qs1 = Item.objects.where(ArrayExpression("tags").contains(parts))
+    #     self.assertEqual(qs1.count(), 1)
+
+    #     qs2 = Item.objects.filter(id__in=qs1.values('id'))
+    #     # print(qs2.query.__str__())
 
     def test_date(self):
         d = datetime.date(2011, 11, 11)

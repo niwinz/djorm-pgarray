@@ -18,9 +18,12 @@ class ArrayExpression(object):
 
 
 class Item(models.Model):
-    tags = ArrayField(dbtype="text")
+    tags = ArrayField(dbtype="text", default=lambda: [])
     objects = ExpressionManager()
 
+class Item2(models.Model):
+    tags = ArrayField(dbtype="text", default=[])
+    objects = ExpressionManager()
 
 class IntModel(models.Model):
     lista = ArrayField(dbtype='int')
