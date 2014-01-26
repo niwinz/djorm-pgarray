@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 0.10
+------------
+
+- Improved tests
+- Fix wrong unicode handling.
+- Date/Datetime type support.
+- MacAddr type suport.
+- Python 3 support.
+
 Version 0.9
 -----------
 
