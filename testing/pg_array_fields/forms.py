@@ -6,3 +6,4 @@ from .models import IntModel
 class IntArrayForm(ModelForm):
     class Meta:
         model = IntModel
+        fields = ["lista"]

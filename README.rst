@@ -25,17 +25,14 @@ This is a sample definition of model using a ArrayField:
 
     from django.db import models
     from djorm_pgarray.fields import ArrayField
-    from djorm_expressions.models import ExpressionManager
 
     class Register(models.Model):
         name = models.CharField(max_length=200)
         points = ArrayField(dbtype="int")
-        objects = ExpressionManager()
 
     class Register2(models.Model):
         name = models.CharField(max_length=200)
         texts = ArrayField(dbtype="text", dimension=2) # this creates `points text[][]` postgresql field.
-        objects = ExpressionManager()
 
 
 Creating objects
@@ -89,4 +86,5 @@ Known issues
 ------------
 
 - Querysets using expressions package can not be used as subqueries. Because alias
-  propagation is not working properly.
+  propagation is not working properly. It will be fixed with django 1.7 and custom
+  lookups.

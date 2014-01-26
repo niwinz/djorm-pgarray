@@ -8,7 +8,6 @@ from django.core.serializers import serialize, deserialize
 from django.db import connection
 from django.test import TestCase
 
-from djorm_expressions.base import SqlExpression
 from djorm_pgarray.fields import ArrayField, ArrayFormField
 
 from .forms import IntArrayForm
@@ -22,7 +21,6 @@ from .models import (IntModel,
                      Item2,
                      DateModel,
                      DateTimeModel,
-                     ArrayExpression,
                      MacAddrModel)
 
 import psycopg2.extensions
@@ -78,21 +76,6 @@ class ArrayFieldTests(TestCase):
         obj = Item2.objects.create()
         self.assertEqual(obj.tags, [])
 
-    # def test_subquery(self):
-    #     # TEST case for wrong alias use on queryset is
-    #     # used as subquery.
-
-    #     # TODO: this is unfinished and unfixed.
-    #     items = [Item.objects.create(tags=["foo{}".format(i)])
-    #             for i in range(10)]
-
-    #     parts = ['foo1']
-    #     qs1 = Item.objects.where(ArrayExpression("tags").contains(parts))
-    #     self.assertEqual(qs1.count(), 1)
-
-    #     qs2 = Item.objects.filter(id__in=qs1.values('id'))
-    #     # print(qs2.query.__str__())
-
     def test_date(self):
         d = datetime.date(2011, 11, 11)
         instance = DateModel.objects.create(dates=[d])
@@ -100,13 +83,11 @@ class ArrayFieldTests(TestCase):
         instance = DateModel.objects.get(pk=instance.pk)
         self.assertEqual(instance.dates[0], d)
 
-
     def test_datetime(self):
         d = datetime.datetime(2011, 11, 11, 11, 11, 11)
         instance = DateTimeModel.objects.create(dates=[d])
         instance = DateTimeModel.objects.get(pk=instance.pk)
         self.assertEqual(instance.dates[0], d)
-
 
     def test_empty_create(self):
         instance = IntModel.objects.create(lista=[])
@@ -121,31 +102,6 @@ class ArrayFieldTests(TestCase):
 
         instance = MacAddrModel.objects.get(pk=instance.pk)
         self.assertEqual(instance.lista, ['00:24:d6:54:ff:c6', '00:24:d6:54:ff:c4'])
-
-    def test_overlap(self):
-        obj1 = IntModel.objects.create(lista=[1,2,3])
-        obj2 = IntModel.objects.create(lista=[2,4,5])
-        obj3 = IntModel.objects.create(lista=[5,33,21])
-
-        queryset = IntModel.objects.where(
-            SqlExpression("lista", "&&", [1,2,3])
-        )
-        self.assertEqual(queryset.count(), 2)
-
-        queryset = IntModel.objects.where(
-            SqlExpression("lista", "&&", [1,2,3])
-        )
-        self.assertEqual(queryset.count(), 2)
-
-
-    def test_contains_unicode(self):
-        obj = TextModel.objects\
-            .create(lista=[u"Fóö", u"Пример", u"test"])
-
-        queryset = TextModel.objects.where(
-            SqlExpression("lista", "@>", [u"Пример"])
-        )
-        self.assertEqual(queryset.count(), 1)
 
     def test_correct_behavior_with_text_arrays_01(self):
         obj = TextModel.objects.create(lista=[[1,2],[3,4]])
@@ -256,6 +212,10 @@ if django.VERSION[:2] >= (1, 7):
             qs = IntModel.objects.filter(lista__overlap=[2,1])
             self.assertEqual(qs.count(), 1)
 
+        def test_contains_unicode(self):
+            obj = TextModel.objects.create(lista=[u"Fóö", u"Пример", u"test"])
+            qs = TextModel.objects.filter(lista__contains=[u"Пример"])
+            self.assertEqual(qs.count(), 1)
 
 
 class ArrayFormFieldTests(TestCase):
