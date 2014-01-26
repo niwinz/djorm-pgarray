@@ -24,6 +24,7 @@ STATICFILES_FINDERS = [
 ]
 
 STATIC_URL = "/static/"
+SITE_ID = 1
 
 TIME_ZONE = 'America/Chicago'
 LANGUAGE_CODE = 'en-us'
@@ -43,6 +44,7 @@ MIDDLEWARE_CLASSES = [
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sites',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.admin',

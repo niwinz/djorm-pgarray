@@ -2,6 +2,7 @@
 
 import json
 
+import django
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
@@ -72,6 +73,11 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         kwargs["type_cast"] = self._type_cast
         kwargs["dimension"] = self._dimension
         return name, path, args, kwargs
+
+    def get_db_prep_lookup(self, lookup_type, value, connection, prepared=False):
+        if isinstance(value, (list, tuple)):
+            return [value]
+        return super(ArrayField, self).get_db_prep_lookup(lookup_type, value, connection, prepared)
 
     def formfield(self, **params):
         params.setdefault('form_class', ArrayFormField)
@@ -151,3 +157,40 @@ class ArrayFormField(forms.Field):
 
     def to_python(self, value):
         return value.split(self.delim)
+
+
+
+if django.VERSION[:2] >= (1, 7):
+    from django.db.models import Lookup
+
+    class ContainsLookup(Lookup):
+        lookup_name = 'contains'
+
+        def as_sql(self, qn, connection):
+            lhs, lhs_params = self.process_lhs(qn, connection)
+            rhs, rhs_params = self.process_rhs(qn, connection)
+            params = lhs_params + rhs_params
+            return '%s @> %s' % (lhs, rhs), params
+
+    class ContainedByLookup(Lookup):
+        lookup_name = "contained_by"
+
+        def as_sql(self, qn, connection):
+            lhs, lhs_params = self.process_lhs(qn, connection)
+            rhs, rhs_params = self.process_rhs(qn, connection)
+            params = lhs_params + rhs_params
+            return '%s <@ %s' % (lhs, rhs), params
+
+    class OverlapLookip(Lookup):
+        lookup_name = "overlap"
+
+        def as_sql(self, qn, connection):
+            lhs, lhs_params = self.process_lhs(qn, connection)
+            rhs, rhs_params = self.process_rhs(qn, connection)
+            params = lhs_params + rhs_params
+            return '%s && %s' % (lhs, rhs), params
+
+    from django.db.models.fields import Field
+    Field.register_lookup(ContainedByLookup)
+    Field.register_lookup(ContainsLookup)
+    Field.register_lookup(OverlapLookip)

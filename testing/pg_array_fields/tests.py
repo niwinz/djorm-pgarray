@@ -2,6 +2,7 @@
 
 import datetime
 
+import django
 from django.contrib.admin import AdminSite, ModelAdmin
 from django.core.serializers import serialize, deserialize
 from django.db import connection
@@ -228,6 +229,33 @@ class ArrayFieldTests(TestCase):
         obj = ChoicesModel(choices=['A'])
         obj.full_clean()
         obj.save()
+
+if django.VERSION[:2] >= (1, 7):
+    class ArrayFieldTests(TestCase):
+        def setUp(self):
+            IntModel.objects.all().delete()
+
+        def test_contains_lookup(self):
+            obj1 = IntModel.objects.create(lista=[1,4,3])
+            obj2 = IntModel.objects.create(lista=[0,10,50])
+
+            qs = IntModel.objects.filter(lista__contains=[1,3])
+            self.assertEqual(qs.count(), 1)
+
+        def test_contained_by_lookup(self):
+            obj1 = IntModel.objects.create(lista=[2,7])
+            obj2 = IntModel.objects.create(lista=[0,10,50])
+
+            qs = IntModel.objects.filter(lista__contained_by=[1,7,4,2,6])
+            self.assertEqual(qs.count(), 1)
+
+        def test_overlap_lookup(self):
+            obj1 = IntModel.objects.create(lista=[1,4,3])
+            obj2 = IntModel.objects.create(lista=[0,10,50])
+
+            qs = IntModel.objects.filter(lista__overlap=[2,1])
+            self.assertEqual(qs.count(), 1)
+
 
 
 class ArrayFormFieldTests(TestCase):
