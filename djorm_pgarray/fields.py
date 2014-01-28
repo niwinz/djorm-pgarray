@@ -67,13 +67,6 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         kwargs.setdefault('default', None)
         super(ArrayField, self).__init__(*args, **kwargs)
 
-    def deconstruct(self):
-        name, path, args, kwargs = super(ArrayField, self).deconstruct()
-        kwargs["dbtype"] = self._array_type
-        kwargs["type_cast"] = self._type_cast
-        kwargs["dimension"] = self._dimension
-        return name, path, args, kwargs
-
     def get_db_prep_lookup(self, lookup_type, value, connection, prepared=False):
         if isinstance(value, (list, tuple)):
             return [value]
@@ -82,9 +75,6 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     def formfield(self, **params):
         params.setdefault('form_class', ArrayFormField)
         return super(ArrayField, self).formfield(**params)
-
-    def db_type(self, connection):
-        return '{0}{1}'.format(self._array_type, "[]" * self._dimension)
 
     def get_db_prep_value(self, value, connection, prepared=False):
         value = value if prepared else self.get_prep_value(value)
@@ -106,6 +96,23 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     def validate(self, value, model_instance):
         for val in value:
             super(ArrayField, self).validate(val, model_instance)
+
+    if django.VERSION[:2] >= (1, 7):
+        def deconstruct(self):
+            name, path, args, kwargs = super(ArrayField, self).deconstruct()
+            kwargs["dbtype"] = self._array_type
+            kwargs["type_cast"] = self._type_cast
+            kwargs["dimension"] = self._dimension
+            return name, path, args, kwargs
+
+        def db_parameters(self, connection):
+            return {
+                'type': '{0}{1}'.format(self._array_type, "[]" * self._dimension),
+                'check': None
+            }
+    else:
+        def db_type(self, connection):
+            return '{0}{1}'.format(self._array_type, "[]" * self._dimension)
 
 
 # South support
