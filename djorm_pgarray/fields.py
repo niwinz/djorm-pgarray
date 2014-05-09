@@ -138,11 +138,14 @@ class ArrayFormField(forms.Field):
     }
 
     def __init__(self, max_length=None, min_length=None, delim=None,
-                 *args, **kwargs):
+                 strip=True, *args, **kwargs):
         if delim is not None:
             self.delim = delim
         else:
             self.delim = u','
+
+        self.strip = strip
+
         super(ArrayFormField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
@@ -152,7 +155,10 @@ class ArrayFormField(forms.Field):
         if isinstance(value, list):
             return value
         try:
-            return value.split(self.delim)
+            if self.strip:
+                return map(unicode.strip, value.split(self.delim))
+            else:
+                return value.split(self.delim)
         except Exception:
             raise ValidationError(self.error_messages['invalid'])
 
