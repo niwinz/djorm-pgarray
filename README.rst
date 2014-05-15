@@ -64,7 +64,7 @@ supports a simple way to extend it:
         # macs = ArrayField(dbtype="macaddr", type_cast=str)
         objects = ExpressionManager()
 
-If type_cast patameter is not None, ArrayField ignores the no existence of a builtin
+If type_cast parameter is not None, ArrayField ignores the no existence of a builtin
 cast function for some type and use a function passed throught type_cast argument.
 
 
