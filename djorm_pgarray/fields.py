@@ -52,12 +52,14 @@ def _unserialize(value):
 class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     def __init__(self, *args, **kwargs):
         self._array_type = kwargs.pop('dbtype', 'int')
-        self._type_key = self._array_type.split('(')[0]
+        type_key = self._array_type.split('(')[0]
 
+        self._explicit_type_cast = False
         if "type_cast" in kwargs:
             self._type_cast = kwargs.pop("type_cast")
-        elif self._type_key in TYPES:
-            self._type_cast = TYPES[self._type_key]
+            self._explicit_type_cast = True
+        elif type_key in TYPES:
+            self._type_cast = TYPES[type_key]
         else:
             self._type_cast = lambda x: x
 
@@ -103,7 +105,7 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
             kwargs['dbtype'] = self._array_type
         if self._dimension != 1:
             kwargs['dimension'] = self._dimension
-        if self._type_cast != TYPES.get(self._type_key):
+        if self._explicit_type_cast:
             kwargs['type_cast'] = self._type_cast
         if self.blank:
             kwargs.pop('blank', None)

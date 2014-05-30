@@ -272,6 +272,16 @@ if django.VERSION[:2] >= (1, 7):
             self.assertEqual(af.null, naf.null)
             self.assertEqual(af.default, naf.default)
 
+        def test_deconstruct_unknown_dbtype(self):
+            """Deconstruction does not include type_cast if dbtype unknown."""
+            af = ArrayField(dbtype='foo')
+
+            name, path, args, kwargs = af.deconstruct()
+
+            naf = ArrayField(*args, **kwargs)
+
+            self.assertEqual(kwargs, {'dbtype': 'foo'})
+
 
 class ArrayFormFieldTests(TestCase):
     def test_regular_forms(self):
