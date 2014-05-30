@@ -186,6 +186,7 @@ class ArrayFieldTests(TestCase):
         obj.full_clean()
         obj.save()
 
+
 if django.VERSION[:2] >= (1, 7):
     class ArrayFieldTests(TestCase):
         def setUp(self):
@@ -216,6 +217,52 @@ if django.VERSION[:2] >= (1, 7):
             obj = TextModel.objects.create(lista=[u"Fóö", u"Пример", u"test"])
             qs = TextModel.objects.filter(lista__contains=[u"Пример"])
             self.assertEqual(qs.count(), 1)
+
+        def test_deconstruct_defaults(self):
+            """Attributes at default values left out of deconstruction."""
+            af = ArrayField()
+
+            name, path, args, kwargs = af.deconstruct()
+
+            naf = ArrayField(*args, **kwargs)
+
+            self.assertEqual((args, kwargs), ([], {}))
+            self.assertEqual(af._array_type, naf._array_type)
+            self.assertEqual(af._dimension, naf._dimension)
+            self.assertEqual(af.blank, naf.blank)
+            self.assertEqual(af.null, naf.null)
+            self.assertEqual(af.default, naf.default)
+
+        def test_deconstruct_custom(self):
+            """Attributes at custom values included in deconstruction."""
+            af = ArrayField(
+                dbtype='text',
+                dimension=2,
+                blank=False,
+                null=False,
+                default=[['a'], ['b']],
+            )
+
+            name, path, args, kwargs = af.deconstruct()
+
+            naf = ArrayField(*args, **kwargs)
+
+            self.assertEqual(args, [])
+            self.assertEqual(
+                kwargs,
+                {
+                    'dbtype': 'text',
+                    'dimension': 2,
+                    'blank': False,
+                    'null': False,
+                    'default': [['a'], ['b']],
+                },
+            )
+            self.assertEqual(af._array_type, naf._array_type)
+            self.assertEqual(af._dimension, naf._dimension)
+            self.assertEqual(af.blank, naf.blank)
+            self.assertEqual(af.null, naf.null)
+            self.assertEqual(af.default, naf.default)
 
 
 class ArrayFormFieldTests(TestCase):

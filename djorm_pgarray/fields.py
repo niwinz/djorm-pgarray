@@ -97,22 +97,29 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         for val in value:
             super(ArrayField, self).validate(val, model_instance)
 
-    if django.VERSION[:2] >= (1, 7):
-        def deconstruct(self):
-            name, path, args, kwargs = super(ArrayField, self).deconstruct()
-            kwargs["dbtype"] = self._array_type
-            kwargs["type_cast"] = self._type_cast
-            kwargs["dimension"] = self._dimension
-            return name, path, args, kwargs
+    def deconstruct(self):
+        name, path, args, kwargs = super(ArrayField, self).deconstruct()
+        if self._array_type != 'int':
+            kwargs['dbtype'] = self._array_type
+        if self._dimension != 1:
+            kwargs['dimension'] = self._dimension
+        if self.blank:
+            kwargs.pop('blank', None)
+        else:
+            kwargs['blank'] = self.blank
+        if self.null:
+            kwargs.pop('null', None)
+        else:
+            kwargs['null'] = self.null
+        if self.default is None:
+            kwargs.pop('default', None)
+        else:
+            kwargs['default'] = self.default
 
-        def db_parameters(self, connection):
-            return {
-                'type': '{0}{1}'.format(self._array_type, "[]" * self._dimension),
-                'check': None
-            }
-    else:
-        def db_type(self, connection):
-            return '{0}{1}'.format(self._array_type, "[]" * self._dimension)
+        return name, path, args, kwargs
+
+    def db_type(self, connection):
+        return '{0}{1}'.format(self._array_type, "[]" * self._dimension)
 
 
 # South support
