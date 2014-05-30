@@ -6,6 +6,7 @@ import django
 from django.contrib.admin import AdminSite, ModelAdmin
 from django.core.serializers import serialize, deserialize
 from django.db import connection
+from django import forms
 from django.test import TestCase
 
 from djorm_pgarray.fields import ArrayField, ArrayFormField
@@ -170,6 +171,13 @@ class ArrayFieldTests(TestCase):
                 pass
         form_field = model_field.formfield(form_class=FakeFieldClass)
         self.assertIsInstance(form_field, FakeFieldClass)
+
+    def test_default_formfield_with_choices(self):
+        model_field = ArrayField(choices=[('a', 'a')], dbtype='text')
+        form_field = model_field.formfield()
+        self.assertIsInstance(form_field, forms.TypedMultipleChoiceField)
+        self.assertEqual(form_field.choices, [('a', 'a')])
+        self.assertEqual(form_field.coerce, str)
 
     def test_other_types_properly_casted(self):
         obj = MultiTypeModel.objects.create(
