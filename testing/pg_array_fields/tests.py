@@ -29,6 +29,10 @@ class MacAddr(str):
     pass
 
 
+def custom_type_cast(val):
+    return val
+
+
 def get_type_oid(sql_expression):
     """Query the database for the OID of the type of sql_expression."""
     cursor = connection.cursor()
@@ -229,6 +233,7 @@ if django.VERSION[:2] >= (1, 7):
             self.assertEqual((args, kwargs), ([], {}))
             self.assertEqual(af._array_type, naf._array_type)
             self.assertEqual(af._dimension, naf._dimension)
+            self.assertEqual(af._type_cast, naf._type_cast)
             self.assertEqual(af.blank, naf.blank)
             self.assertEqual(af.null, naf.null)
             self.assertEqual(af.default, naf.default)
@@ -238,6 +243,7 @@ if django.VERSION[:2] >= (1, 7):
             af = ArrayField(
                 dbtype='text',
                 dimension=2,
+                type_cast=custom_type_cast,
                 blank=False,
                 null=False,
                 default=[['a'], ['b']],
@@ -253,6 +259,7 @@ if django.VERSION[:2] >= (1, 7):
                 {
                     'dbtype': 'text',
                     'dimension': 2,
+                    'type_cast': custom_type_cast,
                     'blank': False,
                     'null': False,
                     'default': [['a'], ['b']],
@@ -260,6 +267,7 @@ if django.VERSION[:2] >= (1, 7):
             )
             self.assertEqual(af._array_type, naf._array_type)
             self.assertEqual(af._dimension, naf._dimension)
+            self.assertEqual(af._type_cast, naf._type_cast)
             self.assertEqual(af.blank, naf.blank)
             self.assertEqual(af.null, naf.null)
             self.assertEqual(af.default, naf.default)
