@@ -76,6 +76,10 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
 
     def formfield(self, **params):
         params.setdefault('form_class', ArrayFormField)
+        params.setdefault('choices_form_class', forms.TypedMultipleChoiceField)
+        if self.choices:
+            params.setdefault('choices', self.get_choices(include_blank=False))
+            params.setdefault('coerce', self._type_cast)
         return super(ArrayField, self).formfield(**params)
 
     def get_db_prep_value(self, value, connection, prepared=False):
