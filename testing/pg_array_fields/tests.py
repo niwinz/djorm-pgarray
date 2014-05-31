@@ -84,13 +84,16 @@ class ArrayFieldTests(TestCase):
         DoubleModel.objects.all().delete()
         MultiTypeModel.objects.all().delete()
 
-    def test_default_value_1(self):
+    def test_default_value(self):
         """Test default value on model is created."""
         obj = Item.objects.create()
         self.assertEqual(obj.tags, [])
 
         obj = Item2.objects.create()
         self.assertEqual(obj.tags, [])
+
+        obj = IntModel.objects.create()
+        self.assertEqual(obj.lista, None)
 
     def test_date(self):
         """Test date array fields."""
