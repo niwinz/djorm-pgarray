@@ -1,0 +1,245 @@
+djorm-ext-pgarray documentation
+===============================
+Andrey Antukh, <niwi@niwi.be>
+1.0.1, 2014-05-28
+
+:toc:
+
+
+Introduction
+------------
+
+Django by default, has a large collection of possible types that can be used to define the
+model. But sometimes we need to use some more complex types offered by PostgreSQL. In this
+case, we will look the integrating of PostgreSQL array with Django.
+
+
+Requirements
+------------
+
+- Python 2.7, 3.3 or 3.4
+- Django 1.5, 1.6 and 1.7
+- Psycopg2 >= 2.5.0
+
+
+Features
+--------
+
+- Shortcut fields for almost all default django field types.
+- Django >=1.7 custom lookups for easy querying.
+- User defined types support out of the box.
+- Multiple dimensions arrays.
+
+
+User guide
+----------
+
+Installation
+~~~~~~~~~~~~
+
+The simplest way to install **djorm-ext-pgarray** is using **pip**:
+
+[source, bash]
+----
+pip install djorm-ext-pgarray
+----
+
+Configure
+~~~~~~~~~
+
+Nothing to configure, use field as is. How you are using any other django builtin model field.
+
+
+Quick start
+~~~~~~~~~~~
+
+This is a sample definition of model using a ArrayField:
+
+[source, python]
+----
+from django.db import models
+from djorm_pgarray.fields import IntegerArrayField
+
+class Register(models.Model):
+    name = models.CharField(max_length=200)
+    points = IntegerArrayField()
+----
+
+
+Now, you can use this model and store python native lists on points
+field:
+
+[source, pycon]
+----
+>>> Register.objects.create(points=[1,2,3,4])
+<Register: Register object>
+>>> obj = Register.objects.get()
+>>> obj.points
+[1,2,3,4]
+----
+
+
+Arrays with multiple dimensions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+PostgreSQL also has support for arrays with multiple dimensions, and you can use
+them with **djorm-ext-pgarray**:
+
+.Sample model definition
+[source, python]
+----
+class Filter(models.Model):
+    name = models.CharField(max_length=200)
+    tag_groups = TextArrayField(dimension=2) # this creates text[][] postgresql field.
+----
+
+
+Now you can store on `Filter.tag_groups` field arrays with two dimensions:
+
+[source, pycon]
+----
+>>> tag_groups = [["Hello", "World"], ["Hola", "Mundo"]]
+>>> Filter.objects.create(tag_groups=tag_groups)
+<Filter: Filter object>
+----
+
+
+Not defaultly supported types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**djorm-ext-pgarray** comes with limited set of supported types, but it can be extended
+for use with different types. In this case we go to use bytea arrays.
+
+.Simple model definition
+[source, python]
+----
+class ModelWithBytes(models.Model):
+    entries = ArrayField(dbtype="bytea")
+----
+
+
+Now, you can save byte data and retrieve it
+
+[source, pycon]
+----
+>>> data = [memoryview(b"\x01\x00\x00\x00\x00\x00"),
+...         memoryview(b"\x02\x00\x00\x00\x00\x00"),
+...         memoryview(b"\x03\x00\x00\x00\x00\x00")]
+>>> ModelWithBytes.objects.create(entries=data)
+>>> obj = ModelWithBytes.objects.get()
+>>> assert obj.entries[0].tobytes() == data[0].tobytes()
+----
+
+
+Api Reference
+-------------
+
+This is a list of available fields:
+
+- `djorm_pgarray.fields.ArrayField` (Generic field)
+- `djorm_pgarray.fields.SmallIntegerArrayField`
+- `djorm_pgarray.fields.IntegerArrayField`
+- `djorm_pgarray.fields.BigIntegerArrayField`
+- `djorm_pgarray.fields.FloatArrayField`
+- `djorm_pgarray.fields.TextArrayField`
+- `djorm_pgarray.fields.DateArrayField`
+- `djorm_pgarray.fields.DateTimeArrayField`
+
+
+`ArrayField`
+~~~~~~~~~~~~
+
+Is a generic/base field which inherited by the rest, and accept the following parameters:
+
+- `dbtype`: string that represents the database type
+- `dimension`: integer that represents the array dimension
+- `type_cast`: function that represents the type cast function.
+
+
+The rest of ArrayField subclasses are simple aliases with corresponding `dbtype` value.
+
+
+Changelog
+---------
+
+Version 0.11
+~~~~~~~~~~~~
+
+- Improvements on formfields. (Carl Meyer)
+- Improvements on django 1.7 support. (Carl Meyer)
+- Improvements on type casting (Carl Meyer)
+- Default aliases for most common types.
+- New documentation.
+- Python3 fixes.
+
+
+Version 0.10
+~~~~~~~~~~~~
+
+- Improved tests
+- Fix wrong unicode handling.
+- Date/Datetime type support.
+- MacAddr type suport tested but not enabled by default.
+- Python 3 support.
+
+Version 0.9
+~~~~~~~~~~~
+
+- Allow user override of form field class (Carl Meyer)
+- Allow use self defined types.
+
+Version 0.8
+~~~~~~~~~~~
+
+- Bugfixes
+- Sphinx documentation
+
+Version 0.7
+~~~~~~~~~~~
+
+- Bugfixes for xml serialization format.
+- Bugfixes for form field.
+
+Version 0.6
+~~~~~~~~~~~
+
+- Add admin form field.
+
+Version 0.5
+~~~~~~~~~~~
+
+- Add python3 suppot (thanks to @dstufft).
+
+
+.[[license]]
+License
+-------
+
+[source,text]
+----
+Copyright (c) 2013-2014 Andrey Antukh <niwi@niwi.be>
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. The name of the author may not be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+----
