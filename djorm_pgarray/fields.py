@@ -128,21 +128,46 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         return "{0}{1}".format(self._array_type, "[]" * self._dimension)
 
 
-# South support
-try:
-    from south.modelsinspector import add_introspection_rules
-    add_introspection_rules([
-        (
-            [ArrayField], # class
-            [],           # positional params
-            {
-                "dbtype": ["_array_type", {"default": "int"}],
-                "dimension": ["_dimension", {"default": 1}],
-            }
-        )
-    ], ["^djorm_pgarray\.fields\.ArrayField"])
-except ImportError:
-    pass
+class IntegerArrayField(ArrayField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("dbtype", "int")
+        super(IntegerArrayField, self).__init__(*args, **kwargs)
+
+
+class SmallIntegerArrayField(ArrayField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("dbtype", "smallint")
+        super(SmallIntegerArrayField, self).__init__(*args, **kwargs)
+
+
+class BigIntegerArrayField(ArrayField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("dbtype", "bigint")
+        super(BigIntegerArrayField, self).__init__(*args, **kwargs)
+
+
+class TextArrayField(ArrayField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("dbtype", "text")
+        super(TextArrayField, self).__init__(*args, **kwargs)
+
+
+class FloatArrayField(ArrayField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("dbtype", "double precision")
+        super(FloatArrayField, self).__init__(*args, **kwargs)
+
+
+class DateArrayField(ArrayField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("dbtype", "date")
+        super(DateArrayField, self).__init__(*args, **kwargs)
+
+
+class DateTimeArrayField(ArrayField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("dbtype", "timestamp with time zone")
+        super(DateTimeArrayField, self).__init__(*args, **kwargs)
 
 
 class ArrayFormField(forms.Field):
@@ -220,3 +245,83 @@ if django.VERSION[:2] >= (1, 7):
     Field.register_lookup(ContainedByLookup)
     Field.register_lookup(ContainsLookup)
     Field.register_lookup(OverlapLookip)
+
+
+# South support
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([
+        (
+            [ArrayField], # class
+            [],           # positional params
+            {
+                "dbtype": ["_array_type", {"default": "int"}],
+                "dimension": ["_dimension", {"default": 1}],
+            }
+        )
+    ], ["^djorm_pgarray\.fields\.ArrayField"])
+    add_introspection_rules([
+        (
+            [TextArrayField], # class
+            [],           # positional params
+            {
+                "dimension": ["_dimension", {"default": 1}],
+            }
+        )
+    ], ["^djorm_pgarray\.fields\.TextArrayField"])
+    add_introspection_rules([
+        (
+            [FloatArrayField], # class
+            [],           # positional params
+            {
+                "dimension": ["_dimension", {"default": 1}],
+            }
+        )
+    ], ["^djorm_pgarray\.fields\.FloatArrayField"])
+    add_introspection_rules([
+        (
+            [IntegerArrayField], # class
+            [],           # positional params
+            {
+                "dimension": ["_dimension", {"default": 1}],
+            }
+        )
+    ], ["^djorm_pgarray\.fields\.IntegerArrayField"])
+    add_introspection_rules([
+        (
+            [BigIntegerArrayField], # class
+            [],           # positional params
+            {
+                "dimension": ["_dimension", {"default": 1}],
+            }
+        )
+    ], ["^djorm_pgarray\.fields\.BigIntegerArrayField"])
+    add_introspection_rules([
+        (
+            [SmallIntegerArrayField], # class
+            [],           # positional params
+            {
+                "dimension": ["_dimension", {"default": 1}],
+            }
+        )
+    ], ["^djorm_pgarray\.fields\.SmallIntegerArrayField"])
+    add_introspection_rules([
+        (
+            [DateTimeArrayField], # class
+            [],           # positional params
+            {
+                "dimension": ["_dimension", {"default": 1}],
+            }
+        )
+    ], ["^djorm_pgarray\.fields\.DateTimeArrayField"])
+    add_introspection_rules([
+        (
+            [DateArrayField], # class
+            [],           # positional params
+            {
+                "dimension": ["_dimension", {"default": 1}],
+            }
+        )
+    ], ["^djorm_pgarray\.fields\.DateArrayField"])
+except ImportError:
+    pass

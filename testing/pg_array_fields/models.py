@@ -2,37 +2,54 @@
 
 from django.db import models
 from djorm_pgarray.fields import ArrayField
+from djorm_pgarray.fields import TextArrayField
+from djorm_pgarray.fields import FloatArrayField
+from djorm_pgarray.fields import IntegerArrayField
+from djorm_pgarray.fields import DateArrayField
+from djorm_pgarray.fields import DateTimeArrayField
+from djorm_pgarray.fields import SmallIntegerArrayField
+
 
 class Item(models.Model):
-    tags = ArrayField(dbtype="text", default=lambda: [])
+    tags = TextArrayField(default=lambda: [])
+
 
 class Item2(models.Model):
-    tags = ArrayField(dbtype="text", default=[])
+    tags = TextArrayField(default=[])
+
 
 class IntModel(models.Model):
-    lista = ArrayField(dbtype='int')
+    lista = IntegerArrayField()
+
 
 class TextModel(models.Model):
-    lista = ArrayField(dbtype='text')
+    lista = TextArrayField()
+
 
 class MacAddrModel(models.Model):
-    lista = ArrayField(dbtype='macaddr', type_cast=str)
+    lista = ArrayField(dbtype="macaddr", type_cast=str)
+
 
 class DoubleModel(models.Model):
-    lista = ArrayField(dbtype='double precision')
+    lista = FloatArrayField()
+
 
 class MTextModel(models.Model):
-    data = ArrayField(dbtype="text", dimension=2)
+    data = TextArrayField(dimension=2)
+
 
 class MultiTypeModel(models.Model):
-    smallints = ArrayField(dbtype="smallint")
+    smallints = SmallIntegerArrayField()
     varchars = ArrayField(dbtype="varchar(30)")
 
+
 class DateModel(models.Model):
-    dates = ArrayField(dbtype="date")
+    dates = DateArrayField()
+
 
 class DateTimeModel(models.Model):
-    dates = ArrayField(dbtype="timestamp")
+    dates = DateTimeArrayField()
+
 
 class ChoicesModel(models.Model):
-    choices = ArrayField(dbtype='text', choices=[('A', 'A'), ('B', 'B')])
+    choices = TextArrayField(choices=[("A", "A"), ("B", "B")])
