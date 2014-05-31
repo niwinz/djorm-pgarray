@@ -189,16 +189,19 @@ class ArrayFormField(forms.Field):
     def clean(self, value):
         if not value:
             return []
+
         # If Django already parsed value to list
         if isinstance(value, list):
             return value
+
         try:
+            value = value.split(self.delim)
             if self.strip:
-                return map(unicode.strip, value.split(self.delim))
-            else:
-                return value.split(self.delim)
+                value = [x.strip() for x in value]
         except Exception:
             raise ValidationError(self.error_messages["invalid"])
+
+        return value
 
     def prepare_value(self, value):
         if value:
