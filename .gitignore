@@ -1,0 +1,9 @@
+*.pyc
+.*swp
+doc/build
+dist
+versiontools*
+build*
+*.egg*
+
+doc/index.html
