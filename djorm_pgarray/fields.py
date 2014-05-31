@@ -16,11 +16,9 @@ TYPES = {
     "int": int,
     "smallint": int,
     "bigint": int,
-    "text": str,
+    "text": force_text,
     "double precision": float,
-    "varchar": str,
-    "date": lambda x: x,
-    "datetime": lambda x: x,
+    "varchar": force_text,
 }
 
 
