@@ -8,6 +8,7 @@ from django.core.serializers import serialize, deserialize
 from django.db import connection
 from django import forms
 from django.test import TestCase
+from django.utils.encoding import force_text
 
 from djorm_pgarray.fields import ArrayField, ArrayFormField
 
@@ -25,6 +26,8 @@ from .models import (IntModel,
                      MacAddrModel)
 
 import psycopg2.extensions
+
+# Adapters
 
 class MacAddr(str):
     pass
@@ -66,6 +69,8 @@ def register_macaddr_type():
     psycopg2.extensions.register_type(array_of_mac)
 
 
+# Tests
+
 class ArrayFieldTests(TestCase):
     def setUp(self):
         IntModel.objects.all().delete()
@@ -74,14 +79,15 @@ class ArrayFieldTests(TestCase):
         MultiTypeModel.objects.all().delete()
 
     def test_default_value_1(self):
+        """Test default value on model is created."""
         obj = Item.objects.create()
         self.assertEqual(obj.tags, [])
 
-    def test_default_value_2(self):
         obj = Item2.objects.create()
         self.assertEqual(obj.tags, [])
 
     def test_date(self):
+        """Test date array fields."""
         d = datetime.date(2011, 11, 11)
         instance = DateModel.objects.create(dates=[d])
 
@@ -181,7 +187,7 @@ class ArrayFieldTests(TestCase):
         form_field = model_field.formfield()
         self.assertIsInstance(form_field, forms.TypedMultipleChoiceField)
         self.assertEqual(form_field.choices, [('a', 'a')])
-        self.assertEqual(form_field.coerce, str)
+        self.assertEqual(form_field.coerce, force_text)
 
     def test_other_types_properly_casted(self):
         obj = MultiTypeModel.objects.create(
@@ -200,7 +206,7 @@ class ArrayFieldTests(TestCase):
 
 
 if django.VERSION[:2] >= (1, 7):
-    class ArrayFieldTests(TestCase):
+    class ArrayLookupsFieldTests(TestCase):
         def setUp(self):
             IntModel.objects.all().delete()
 
@@ -295,7 +301,7 @@ class ArrayFormFieldTests(TestCase):
     def test_regular_forms(self):
         form = IntArrayForm()
         self.assertFalse(form.is_valid())
-        form = IntArrayForm({'lista':u'[1,2]'})
+        form = IntArrayForm({'lista':u'1,2'})
         self.assertTrue(form.is_valid())
 
     def test_empty_value(self):
