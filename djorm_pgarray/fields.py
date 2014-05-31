@@ -13,14 +13,14 @@ from django.utils.translation import ugettext_lazy as _
 
 
 TYPES = {
-    'int': int,
-    'smallint': int,
-    'bigint': int,
-    'text': str,
-    'double precision': float,
-    'varchar': str,
-    'date': lambda x: x,
-    'datetime': lambda x: x,
+    "int": int,
+    "smallint": int,
+    "bigint": int,
+    "text": str,
+    "double precision": float,
+    "varchar": str,
+    "date": lambda x: x,
+    "datetime": lambda x: x,
 }
 
 
@@ -51,8 +51,8 @@ def _unserialize(value):
 
 class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     def __init__(self, *args, **kwargs):
-        self._array_type = kwargs.pop('dbtype', 'int')
-        type_key = self._array_type.split('(')[0]
+        self._array_type = kwargs.pop("dbtype", "int")
+        type_key = self._array_type.split("(")[0]
 
         self._explicit_type_cast = False
         if "type_cast" in kwargs:
@@ -63,10 +63,10 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         else:
             self._type_cast = lambda x: x
 
-        self._dimension = kwargs.pop('dimension', 1)
-        kwargs.setdefault('blank', True)
-        kwargs.setdefault('null', True)
-        kwargs.setdefault('default', None)
+        self._dimension = kwargs.pop("dimension", 1)
+        kwargs.setdefault("blank", True)
+        kwargs.setdefault("null", True)
+        kwargs.setdefault("default", None)
         super(ArrayField, self).__init__(*args, **kwargs)
 
     def get_db_prep_lookup(self, lookup_type, value, connection, prepared=False):
@@ -105,29 +105,29 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
 
     def deconstruct(self):
         name, path, args, kwargs = super(ArrayField, self).deconstruct()
-        if self._array_type != 'int':
-            kwargs['dbtype'] = self._array_type
+        if self._array_type != "int":
+            kwargs["dbtype"] = self._array_type
         if self._dimension != 1:
-            kwargs['dimension'] = self._dimension
+            kwargs["dimension"] = self._dimension
         if self._explicit_type_cast:
-            kwargs['type_cast'] = self._type_cast
+            kwargs["type_cast"] = self._type_cast
         if self.blank:
-            kwargs.pop('blank', None)
+            kwargs.pop("blank", None)
         else:
-            kwargs['blank'] = self.blank
+            kwargs["blank"] = self.blank
         if self.null:
-            kwargs.pop('null', None)
+            kwargs.pop("null", None)
         else:
-            kwargs['null'] = self.null
+            kwargs["null"] = self.null
         if self.default is None:
-            kwargs.pop('default', None)
+            kwargs.pop("default", None)
         else:
-            kwargs['default'] = self.default
+            kwargs["default"] = self.default
 
         return name, path, args, kwargs
 
     def db_type(self, connection):
-        return '{0}{1}'.format(self._array_type, "[]" * self._dimension)
+        return "{0}{1}".format(self._array_type, "[]" * self._dimension)
 
 
 # South support
@@ -142,14 +142,14 @@ try:
                 "dimension": ["_dimension", {"default": 1}],
             }
         )
-    ], ['^djorm_pgarray\.fields\.ArrayField'])
+    ], ["^djorm_pgarray\.fields\.ArrayField"])
 except ImportError:
     pass
 
 
 class ArrayFormField(forms.Field):
     default_error_messages = {
-        'invalid': _('Enter a list of values, joined by commas.  E.g. "a,b,c".'),
+        "invalid": _("Enter a list of values, joined by commas.  E.g. \"a,b,c\"."),
     }
 
     def __init__(self, max_length=None, min_length=None, delim=None,
@@ -157,7 +157,7 @@ class ArrayFormField(forms.Field):
         if delim is not None:
             self.delim = delim
         else:
-            self.delim = u','
+            self.delim = u","
 
         self.strip = strip
 
@@ -175,7 +175,7 @@ class ArrayFormField(forms.Field):
             else:
                 return value.split(self.delim)
         except Exception:
-            raise ValidationError(self.error_messages['invalid'])
+            raise ValidationError(self.error_messages["invalid"])
 
     def prepare_value(self, value):
         if value:
@@ -192,13 +192,13 @@ if django.VERSION[:2] >= (1, 7):
     from django.db.models import Lookup
 
     class ContainsLookup(Lookup):
-        lookup_name = 'contains'
+        lookup_name = "contains"
 
         def as_sql(self, qn, connection):
             lhs, lhs_params = self.process_lhs(qn, connection)
             rhs, rhs_params = self.process_rhs(qn, connection)
             params = lhs_params + rhs_params
-            return '%s @> %s' % (lhs, rhs), params
+            return "%s @> %s" % (lhs, rhs), params
 
     class ContainedByLookup(Lookup):
         lookup_name = "contained_by"
@@ -207,7 +207,7 @@ if django.VERSION[:2] >= (1, 7):
             lhs, lhs_params = self.process_lhs(qn, connection)
             rhs, rhs_params = self.process_rhs(qn, connection)
             params = lhs_params + rhs_params
-            return '%s <@ %s' % (lhs, rhs), params
+            return "%s <@ %s" % (lhs, rhs), params
 
     class OverlapLookip(Lookup):
         lookup_name = "overlap"
@@ -216,7 +216,7 @@ if django.VERSION[:2] >= (1, 7):
             lhs, lhs_params = self.process_lhs(qn, connection)
             rhs, rhs_params = self.process_rhs(qn, connection)
             params = lhs_params + rhs_params
-            return '%s && %s' % (lhs, rhs), params
+            return "%s && %s" % (lhs, rhs), params
 
     from django.db.models.fields import Field
     Field.register_lookup(ContainedByLookup)
