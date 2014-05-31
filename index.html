@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="generator" content="AsciiDoc 8.6.9">
+<title>djorm-ext-pgarray documentation</title>
+<link rel="stylesheet" href="static/niwi.css" type="text/css">
+<link rel="stylesheet" href="static/pygments.css" type="text/css">
+
+
+<script type="text/javascript" src="static/asciidoc.js"></script>
+<script type="text/javascript" src="static/niwi.js"></script>
+<script type="text/javascript">
+/*<![CDATA[*/
+asciidoc.install(2);
+/*]]>*/
+</script>
+</head>
+<body class="article" style="max-width:800px">
+<div id="header">
+<h1>djorm-ext-pgarray documentation</h1>
+<span id="author">Andrey Antukh,</span><br>
+<span id="email" class="monospaced">&lt;<a href="mailto:niwi@niwi.be">niwi@niwi.be</a>&gt;</span><br>
+<span id="revnumber">version 1.0.1,</span>
+<span id="revdate">2014-05-28</span>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Django by default, has a large collection of possible types that can be used to define the
+model. But sometimes we need to use some more complex types offered by PostgreSQL. In this
+case, we will look the integrating of PostgreSQL array with Django.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_requirements">Requirements</h2>
+<div class="sectionbody">
+<div class="ulist"><ul>
+<li>
+<p>
+Python 2.7, 3.3 or 3.4
+</p>
+</li>
+<li>
+<p>
+Django 1.5, 1.6 and 1.7
+</p>
+</li>
+<li>
+<p>
+Psycopg2 &gt;= 2.5.0
+</p>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_features">Features</h2>
+<div class="sectionbody">
+<div class="ulist"><ul>
+<li>
+<p>
+Shortcut fields for almost all default django field types.
+</p>
+</li>
+<li>
+<p>
+Django &gt;=1.7 custom lookups for easy querying.
+</p>
+</li>
+<li>
+<p>
+User defined types support out of the box.
+</p>
+</li>
+<li>
+<p>
+Multiple dimensions arrays.
+</p>
+</li>
+</ul></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_user_guide">User guide</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_installation">Installation</h3>
+<div class="paragraph"><p>The simplest way to install <strong>djorm-ext-pgarray</strong> is using <strong>pip</strong>:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre>pip install djorm-ext-pgarray
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_configure">Configure</h3>
+<div class="paragraph"><p>Nothing to configure, use field as is. How you are using any other django builtin model field.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_quick_start">Quick start</h3>
+<div class="paragraph"><p>This is a sample definition of model using a ArrayField:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
+<span class="kn">from</span> <span class="nn">djorm_pgarray.fields</span> <span class="kn">import</span> <span class="n">IntegerArrayField</span>
+
+<span class="k">class</span> <span class="nc">Register</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">IntegerArrayField</span><span class="p">()</span>
+</pre></div></div></div>
+<div class="paragraph"><p>Now, you can use this model and store python native lists on points
+field:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Register</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
+<span class="go">&lt;Register: Register object&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">Register</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">points</span>
+<span class="go">[1,2,3,4]</span>
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_arrays_with_multiple_dimensions">Arrays with multiple dimensions</h3>
+<div class="paragraph"><p>PostgreSQL also has support for arrays with multiple dimensions, and you can use
+them with <strong>djorm-ext-pgarray</strong>:</p></div>
+<div class="listingblock">
+<div class="title">Sample model definition</div>
+<div class="content"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
+    <span class="n">tag_groups</span> <span class="o">=</span> <span class="n">TextArrayField</span><span class="p">(</span><span class="n">dimension</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c"># this creates text[][] postgresql field.</span>
+</pre></div></div></div>
+<div class="paragraph"><p>Now you can store on <span class="monospaced">Filter.tag_groups</span> field arrays with two dimensions:</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">tag_groups</span> <span class="o">=</span> <span class="p">[[</span><span class="s">&quot;Hello&quot;</span><span class="p">,</span> <span class="s">&quot;World&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s">&quot;Hola&quot;</span><span class="p">,</span> <span class="s">&quot;Mundo&quot;</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Filter</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">tag_groups</span><span class="o">=</span><span class="n">tag_groups</span><span class="p">)</span>
+<span class="go">&lt;Filter: Filter object&gt;</span>
+</pre></div></div></div>
+</div>
+<div class="sect2">
+<h3 id="_not_defaultly_supported_types">Not defaultly supported types</h3>
+<div class="paragraph"><p><strong>djorm-ext-pgarray</strong> comes with limited set of supported types, but it can be extended
+for use with different types. In this case we go to use bytea arrays.</p></div>
+<div class="listingblock">
+<div class="title">Simple model definition</div>
+<div class="content"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ModelWithBytes</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+    <span class="n">entries</span> <span class="o">=</span> <span class="n">ArrayField</span><span class="p">(</span><span class="n">dbtype</span><span class="o">=</span><span class="s">&quot;bytea&quot;</span><span class="p">)</span>
+</pre></div></div></div>
+<div class="paragraph"><p>Now, you can save byte data and retrieve it</p></div>
+<div class="listingblock">
+<div class="content"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">memoryview</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;</span><span class="se">\x01\x00\x00\x00\x00\x00</span><span class="s">&quot;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">memoryview</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;</span><span class="se">\x02\x00\x00\x00\x00\x00</span><span class="s">&quot;</span><span class="p">),</span>
+<span class="gp">... </span>        <span class="n">memoryview</span><span class="p">(</span><span class="n">b</span><span class="s">&quot;</span><span class="se">\x03\x00\x00\x00\x00\x00</span><span class="s">&quot;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ModelWithBytes</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">entries</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">ModelWithBytes</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">obj</span><span class="o">.</span><span class="n">entries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span> <span class="o">==</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+</pre></div></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_api_reference">Api Reference</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This is a list of available fields:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<span class="monospaced">djorm_pgarray.fields.ArrayField</span> (Generic field)
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">djorm_pgarray.fields.SmallIntegerArrayField</span>
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">djorm_pgarray.fields.IntegerArrayField</span>
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">djorm_pgarray.fields.BigIntegerArrayField</span>
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">djorm_pgarray.fields.FloatArrayField</span>
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">djorm_pgarray.fields.TextArrayField</span>
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">djorm_pgarray.fields.DateArrayField</span>
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">djorm_pgarray.fields.DateTimeArrayField</span>
+</p>
+</li>
+</ul></div>
+<div class="sect2">
+<h3 id="_span_class_monospaced_arrayfield_span"><span class="monospaced">ArrayField</span></h3>
+<div class="paragraph"><p>Is a generic/base field which inherited by the rest, and accept the following parameters:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<span class="monospaced">dbtype</span>: string that represents the database type
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">dimension</span>: integer that represents the array dimension
+</p>
+</li>
+<li>
+<p>
+<span class="monospaced">type_cast</span>: function that represents the type cast function.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>The rest of ArrayField subclasses are simple aliases with corresponding <span class="monospaced">dbtype</span> value.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_changelog">Changelog</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_version_0_11">Version 0.11</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Improvements on formfields. (Carl Meyer)
+</p>
+</li>
+<li>
+<p>
+Improvements on django 1.7 support. (Carl Meyer)
+</p>
+</li>
+<li>
+<p>
+Improvements on type casting (Carl Meyer)
+</p>
+</li>
+<li>
+<p>
+Default aliases for most common types.
+</p>
+</li>
+<li>
+<p>
+New documentation.
+</p>
+</li>
+<li>
+<p>
+Python3 fixes.
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_version_0_10">Version 0.10</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Improved tests
+</p>
+</li>
+<li>
+<p>
+Fix wrong unicode handling.
+</p>
+</li>
+<li>
+<p>
+Date/Datetime type support.
+</p>
+</li>
+<li>
+<p>
+MacAddr type suport tested but not enabled by default.
+</p>
+</li>
+<li>
+<p>
+Python 3 support.
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_version_0_9">Version 0.9</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Allow user override of form field class (Carl Meyer)
+</p>
+</li>
+<li>
+<p>
+Allow use self defined types.
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_version_0_8">Version 0.8</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Bugfixes
+</p>
+</li>
+<li>
+<p>
+Sphinx documentation
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_version_0_7">Version 0.7</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Bugfixes for xml serialization format.
+</p>
+</li>
+<li>
+<p>
+Bugfixes for form field.
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_version_0_6">Version 0.6</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Add admin form field.
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_version_0_5">Version 0.5</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Add python3 suppot (thanks to @dstufft).
+</p>
+</li>
+</ul></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_license">License</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="title"><a id="license"></a></div>
+<div class="content"><div class="highlight"><pre>Copyright (c) 2013-2014 Andrey Antukh &lt;niwi@niwi.be&gt;
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. The name of the author may not be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS&#39;&#39; AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</pre></div></div></div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr></div>
+<div id="footer">
+<div id="footer-text">
+Version 1.0.1<br>
+Last updated 2014-05-31 12:39:25 CEST
+</div>
+</div>
+</body>
+</html>
