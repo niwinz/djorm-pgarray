@@ -2,34 +2,40 @@
 
 import datetime
 
-import django
-from django.contrib.admin import AdminSite, ModelAdmin
-from django.core.serializers import serialize, deserialize
+from django.contrib.admin import AdminSite
+from django.contrib.admin import ModelAdmin
+from django.core.serializers import serialize
+from django.core.serializers import deserialize
 from django.db import connection
-from django import forms
 from django.test import TestCase
 from django.utils.encoding import force_text
+from django.utils import six
+from django import forms
 
-from djorm_pgarray.fields import ArrayField, ArrayFormField
+import django
+import psycopg2.extensions
+
+from djorm_pgarray.fields import ArrayField
+from djorm_pgarray.fields import ArrayFormField
 
 from .forms import IntArrayForm
-from .models import (IntModel,
-                     TextModel,
-                     DoubleModel,
-                     MTextModel,
-                     MultiTypeModel,
-                     ChoicesModel,
-                     Item,
-                     Item2,
-                     DateModel,
-                     DateTimeModel,
-                     MacAddrModel)
+from .models import IntModel
+from .models import TextModel
+from .models import DoubleModel
+from .models import MTextModel
+from .models import MultiTypeModel
+from .models import ChoicesModel
+from .models import Item
+from .models import Item2
+from .models import DateModel
+from .models import DateTimeModel
+from .models import MacAddrModel
+from .models import BytesArrayModel
 
-import psycopg2.extensions
 
 # Adapters
 
-class MacAddr(str):
+class MacAddr(six.text_type):
     pass
 
 
@@ -198,6 +204,28 @@ class ArrayFieldTests(TestCase):
 
         self.assertEqual(obj.smallints, [1, 2, 3])
         self.assertEqual(obj.varchars, ['One', 'Two', 'Three'])
+
+    def test_custom_bytes_field(self):
+        data = [memoryview(b'\x01\x00\x00\x00\x00\x00'),
+                memoryview(b'\x02\x00\x00\x00\x00\x00'),
+                memoryview(b'\x03\x00\x00\x00\x00\x00')]
+
+
+
+        obj = BytesArrayModel()
+        obj.entries = data
+        obj.save()
+
+        obj2 = BytesArrayModel.objects.get(pk=obj.pk)
+
+        # This is so, because python2/3 inconsistences
+        # With python3 psycopg2 returns memoryviews, with
+        # python2 psycopg2 returns buffer. buffer does not exists
+        # on python3, buffer and memoryview has different interfaces
+        # and buffer can be casted easy to memoryview.
+        self.assertEqual(memoryview(obj2.entries[0]).tobytes(), data[0].tobytes())
+        self.assertEqual(memoryview(obj2.entries[1]).tobytes(), data[1].tobytes())
+        self.assertEqual(memoryview(obj2.entries[2]).tobytes(), data[2].tobytes())
 
     def test_choices_validation(self):
         obj = ChoicesModel(choices=['A'])
