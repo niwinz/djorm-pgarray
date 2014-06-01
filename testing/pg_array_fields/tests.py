@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+
+import unittest
 import datetime
 
 from django.contrib.admin import AdminSite
@@ -93,7 +95,7 @@ class ArrayFieldTests(TestCase):
         self.assertEqual(obj.tags, [])
 
         obj = IntModel.objects.create()
-        self.assertEqual(obj.lista, None)
+        self.assertEqual(obj.field, None)
 
     def test_date(self):
         """Test date array fields."""
@@ -110,23 +112,23 @@ class ArrayFieldTests(TestCase):
         self.assertEqual(instance.dates[0], d)
 
     def test_empty_create(self):
-        instance = IntModel.objects.create(lista=[])
+        instance = IntModel.objects.create(field=[])
         instance = IntModel.objects.get(pk=instance.pk)
-        self.assertEqual(instance.lista, [])
+        self.assertEqual(instance.field, [])
 
     def test_macaddr_model(self):
         register_macaddr_type()
         instance = MacAddrModel.objects.create()
-        instance.lista = [MacAddr('00:24:d6:54:ff:c6'), MacAddr('00:24:d6:54:ff:c4')]
+        instance.field = [MacAddr('00:24:d6:54:ff:c6'), MacAddr('00:24:d6:54:ff:c4')]
         instance.save()
 
         instance = MacAddrModel.objects.get(pk=instance.pk)
-        self.assertEqual(instance.lista, ['00:24:d6:54:ff:c6', '00:24:d6:54:ff:c4'])
+        self.assertEqual(instance.field, ['00:24:d6:54:ff:c6', '00:24:d6:54:ff:c4'])
 
     def test_correct_behavior_with_text_arrays_01(self):
-        obj = TextModel.objects.create(lista=[[1,2],[3,4]])
+        obj = TextModel.objects.create(field=[[1,2],[3,4]])
         obj = TextModel.objects.get(pk=obj.pk)
-        self.assertEqual(obj.lista, [[u'1', u'2'], [u'3', u'4']])
+        self.assertEqual(obj.field, [[u'1', u'2'], [u'3', u'4']])
 
     def test_correct_behavior_with_text_arrays_02(self):
         obj = MTextModel.objects.create(data=[[u"1",u"2"],[u"3",u"ñ"]])
@@ -134,18 +136,18 @@ class ArrayFieldTests(TestCase):
         self.assertEqual(obj.data, [[u"1",u"2"],[u"3",u"ñ"]])
 
     def test_correct_behavior_with_int_arrays(self):
-        obj = IntModel.objects.create(lista=[1,2,3])
+        obj = IntModel.objects.create(field=[1,2,3])
         obj = IntModel.objects.get(pk=obj.pk)
-        self.assertEqual(obj.lista, [1, 2, 3])
+        self.assertEqual(obj.field, [1, 2, 3])
 
     def test_correct_behavior_with_float_arrays(self):
-        obj = DoubleModel.objects.create(lista=[1.2,2.4,3])
+        obj = DoubleModel.objects.create(field=[1.2,2.4,3])
         obj = DoubleModel.objects.get(pk=obj.pk)
-        self.assertEqual(obj.lista, [1.2, 2.4, 3])
+        self.assertEqual(obj.field, [1.2, 2.4, 3])
 
     def test_value_to_string_serializes_correctly(self):
         obj = MTextModel.objects.create(data=[[u"1",u"2"],[u"3",u"ñ"]])
-        obj_int = IntModel.objects.create(lista=[1,2,3])
+        obj_int = IntModel.objects.create(field=[1,2,3])
 
         serialized_obj = serialize('json', MTextModel.objects.filter(pk=obj.pk))
         serialized_obj_int = serialize('json', IntModel.objects.filter(pk=obj_int.pk))
@@ -162,11 +164,11 @@ class ArrayFieldTests(TestCase):
         obj_int.save()
 
         self.assertEqual(obj.data, [[u"1",u"2"],[u"3",u"ñ"]])
-        self.assertEqual(obj_int.lista, [1,2,3])
+        self.assertEqual(obj_int.field, [1,2,3])
 
     def test_to_python_serializes_xml_correctly(self):
         obj = MTextModel.objects.create(data=[[u"1",u"2"],[u"3",u"ñ"]])
-        obj_int = IntModel.objects.create(lista=[1,2,3])
+        obj_int = IntModel.objects.create(field=[1,2,3])
 
         serialized_obj = serialize('xml', MTextModel.objects.filter(pk=obj.pk))
         serialized_obj_int = serialize('xml', IntModel.objects.filter(pk=obj_int.pk))
@@ -181,7 +183,7 @@ class ArrayFieldTests(TestCase):
         obj_int.save()
 
         self.assertEqual(obj.data, [[u"1",u"2"],[u"3",u"ñ"]])
-        self.assertEqual(obj_int.lista, [1,2,3])
+        self.assertEqual(obj_int.field, [1,2,3])
 
     def test_can_override_formfield(self):
         model_field = ArrayField()
@@ -241,30 +243,93 @@ if django.VERSION[:2] >= (1, 7):
         def setUp(self):
             IntModel.objects.all().delete()
 
-        def test_contains_lookup(self):
-            obj1 = IntModel.objects.create(lista=[1,4,3])
-            obj2 = IntModel.objects.create(lista=[0,10,50])
+        def test_exact(self):
+            obj = IntModel.objects.create(field=[1])
+            qs = IntModel.objects.filter(field__exact=[1])
+            self.assertEqual(qs.count(), 1)
 
-            qs = IntModel.objects.filter(lista__contains=[1,3])
+        def test_isnull(self):
+            obj = IntModel.objects.create(field=[1])
+            obj = IntModel.objects.create(field=None)
+            qs = IntModel.objects.filter(field__isnull=True)
+            self.assertEqual(qs.count(), 1)
+
+        def test_in(self):
+            obj = IntModel.objects.create(field=[1])
+            obj = IntModel.objects.create(field=[2])
+            obj = IntModel.objects.create(field=[3])
+
+            qs = IntModel.objects.filter(field__in=[[1], [2]])
+            self.assertEqual(qs.count(), 2)
+
+        def test_index(self):
+            obj = IntModel.objects.create(field=[1, 2])
+            obj = IntModel.objects.create(field=[2, 3])
+            obj = IntModel.objects.create(field=[3, 4])
+
+            qs = IntModel.objects.filter(field__0__in=[1,2]).order_by("id")
+            self.assertEqual(qs.count(), 2)
+            self.assertSequenceEqual(qs[0].field, [1,2])
+            self.assertSequenceEqual(qs[1].field, [2,3])
+
+            qs = IntModel.objects.filter(field__0=1)
+            self.assertEqual(qs.count(), 1)
+            self.assertSequenceEqual(qs[0].field, [1,2])
+
+            # TODO: temporary not supported nested index search :(
+            # obj = IntModel.objects.create(field2=[[1, 2], [3, 4]])
+            # obj = IntModel.objects.create(field2=[[5, 6], [7, 8]])
+            # qs = IntModel.objects.filter(field2__0__0=1)
+            # self.assertEqual(qs.count(), 1)
+
+        def test_slice(self):
+            obj = IntModel.objects.create(field=[2])
+            obj = IntModel.objects.create(field=[2, 3])
+            obj = IntModel.objects.create(field=[5])
+            obj = IntModel.objects.create(field=[6, 3])
+
+            qs = IntModel.objects.filter(field__0_1=[2])
+            self.assertEqual(qs.count(), 2)
+
+        @unittest.expectedFailure
+        def test_index_1(self):
+            obj = IntModel.objects.create(field2=[[1, 2], [3, 4]])
+            obj = IntModel.objects.create(field2=[[5, 6], [7, 8]])
+
+            qs = IntModel.objects.filter(field2__0=[1, 2])
+            self.assertEqual(qs.count(), 1)
+
+        def test_len(self):
+            obj = IntModel.objects.create(field=[1, 2])
+            obj = IntModel.objects.create(field=[2, 3, 4])
+
+            qs = IntModel.objects.filter(field__len__lte=2)
+            self.assertEqual(qs.count(), 1)
+
+        def test_contains_lookup(self):
+            obj1 = IntModel.objects.create(field=[1,4,3])
+            obj2 = IntModel.objects.create(field=[0,10,50])
+
+            qs = IntModel.objects.filter(field__contains=[1,3])
             self.assertEqual(qs.count(), 1)
 
         def test_contained_by_lookup(self):
-            obj1 = IntModel.objects.create(lista=[2,7])
-            obj2 = IntModel.objects.create(lista=[0,10,50])
+            obj1 = IntModel.objects.create(field=[2,7])
+            obj2 = IntModel.objects.create(field=[0,10,50])
 
-            qs = IntModel.objects.filter(lista__contained_by=[1,7,4,2,6])
+            qs = IntModel.objects.filter(field__contained_by=[1,7,4,2,6])
             self.assertEqual(qs.count(), 1)
 
         def test_overlap_lookup(self):
-            obj1 = IntModel.objects.create(lista=[1,4,3])
-            obj2 = IntModel.objects.create(lista=[0,10,50])
+            obj1 = IntModel.objects.create(field=[1,4,3])
+            obj2 = IntModel.objects.create(field=[0,10,50])
 
-            qs = IntModel.objects.filter(lista__overlap=[2,1])
+            qs = IntModel.objects.filter(field__overlap=[2,1])
             self.assertEqual(qs.count(), 1)
 
         def test_contains_unicode(self):
-            obj = TextModel.objects.create(lista=[u"Fóö", u"Пример", u"test"])
-            qs = TextModel.objects.filter(lista__contains=[u"Пример"])
+            obj = TextModel.objects.create(field=[u"Fóö", u"Пример", u"test"])
+            qs = TextModel.objects.filter(field__contains=[u"Пример"])
             self.assertEqual(qs.count(), 1)
 
         def test_deconstruct_defaults(self):
@@ -332,13 +397,13 @@ class ArrayFormFieldTests(TestCase):
     def test_regular_forms(self):
         form = IntArrayForm()
         self.assertFalse(form.is_valid())
-        form = IntArrayForm({'lista':u'1,2'})
+        form = IntArrayForm({'field':u'1,2'})
         self.assertTrue(form.is_valid())
 
     def test_empty_value(self):
-        form = IntArrayForm({'lista':u''})
+        form = IntArrayForm({'field':u''})
         self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data['lista'], [])
+        self.assertEqual(form.cleaned_data['field'], [])
 
     def test_admin_forms(self):
         site = AdminSite()
@@ -357,9 +422,9 @@ class ArrayFormFieldTests(TestCase):
         self.assertEqual(result, u"Клиент,こんにちは")
 
     def test_invalid_error(self):
-        form = IntArrayForm({'lista':1})
+        form = IntArrayForm({'field':1})
         self.assertFalse(form.is_valid())
         self.assertEqual(
-            form.errors['lista'],
+            form.errors['field'],
             [u'Enter a list of values, joined by commas.  E.g. "a,b,c".']
             )

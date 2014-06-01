@@ -19,19 +19,20 @@ class Item2(models.Model):
 
 
 class IntModel(models.Model):
-    lista = IntegerArrayField()
+    field = IntegerArrayField()
+    field2 = IntegerArrayField(dimension=2)
 
 
 class TextModel(models.Model):
-    lista = TextArrayField()
+    field = TextArrayField()
 
 
 class MacAddrModel(models.Model):
-    lista = ArrayField(dbtype="macaddr", type_cast=str)
+    field = ArrayField(dbtype="macaddr", type_cast=str)
 
 
 class DoubleModel(models.Model):
-    lista = FloatArrayField()
+    field = FloatArrayField()
 
 
 class MTextModel(models.Model):
