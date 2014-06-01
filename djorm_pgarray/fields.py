@@ -68,8 +68,8 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         super(ArrayField, self).__init__(*args, **kwargs)
 
     def get_db_prep_lookup(self, lookup_type, value, connection, prepared=False):
-        if isinstance(value, (list, tuple)):
-            return [value]
+        if lookup_type == 'contains':
+            return [self.get_prep_value(value)]
         return super(ArrayField, self).get_db_prep_lookup(lookup_type, value, connection, prepared)
 
     def formfield(self, **params):
