@@ -1,5 +1,5 @@
-djorm-ext-pgarray
-=================
+djorm-pgarray
+=============
 
 NOTE: pypi package name changed from `djorm-ext-pgarray` to more simple `djorm-pgarray`
 
