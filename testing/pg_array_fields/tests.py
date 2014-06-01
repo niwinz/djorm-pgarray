@@ -193,12 +193,13 @@ class ArrayFieldTests(TestCase):
         form_field = model_field.formfield(form_class=FakeFieldClass)
         self.assertIsInstance(form_field, FakeFieldClass)
 
-    def test_default_formfield_with_choices(self):
-        model_field = ArrayField(choices=[('a', 'a')], dbtype='text')
-        form_field = model_field.formfield()
-        self.assertIsInstance(form_field, forms.TypedMultipleChoiceField)
-        self.assertEqual(form_field.choices, [('a', 'a')])
-        self.assertEqual(form_field.coerce, force_text)
+    if django.VERSION[:2] >= (1, 6):
+        def test_default_formfield_with_choices(self):
+            model_field = ArrayField(choices=[('a', 'a')], dbtype='text')
+            form_field = model_field.formfield()
+            self.assertIsInstance(form_field, forms.TypedMultipleChoiceField)
+            self.assertEqual(form_field.choices, [('a', 'a')])
+            self.assertEqual(form_field.coerce, force_text)
 
     def test_other_types_properly_casted(self):
         obj = MultiTypeModel.objects.create(
