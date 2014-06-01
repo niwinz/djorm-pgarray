@@ -1,5 +1,5 @@
-djorm-ext-pgarray documentation
-===============================
+djorm-pgarray documentation
+===========================
 Andrey Antukh, <niwi@niwi.be>
 1.0.1, 2014-05-28
 
@@ -12,6 +12,14 @@ Introduction
 Django by default, has a large collection of possible types that can be used to define the
 model. But sometimes we need to use some more complex types offered by PostgreSQL. In this
 case, we will look the integrating of PostgreSQL array with Django.
+
+[WARNING]
+====
+This package is renamed from *djorm-ext-pgarray* to *djorm-pgarray*.
+
+Api and import statements are not changed. Only python package index toplevel
+package name is changed.
+====
 
 
 Requirements
@@ -37,11 +45,11 @@ User guide
 Installation
 ~~~~~~~~~~~~
 
-The simplest way to install **djorm-ext-pgarray** is using **pip**:
+The simplest way to install **djorm-pgarray** is using **pip**:
 
 [source, bash]
 ----
-pip install djorm-ext-pgarray
+pip install djorm-pgarray
 ----
 
 Configure
@@ -83,7 +91,7 @@ Arrays with multiple dimensions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 PostgreSQL also has support for arrays with multiple dimensions, and you can use
-them with **djorm-ext-pgarray**:
+them with **djorm-pgarray**:
 
 .Sample model definition
 [source, python]
@@ -107,7 +115,7 @@ Now you can store on `Filter.tag_groups` field arrays with two dimensions:
 Not defaultly supported types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**djorm-ext-pgarray** comes with limited set of supported types, but it can be extended
+**djorm-pgarray** comes with limited set of supported types, but it can be extended
 for use with different types. In this case we go to use bytea arrays.
 
 .Simple model definition
