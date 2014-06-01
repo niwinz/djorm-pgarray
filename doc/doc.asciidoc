@@ -131,6 +131,97 @@ Now, you can save byte data and retrieve it
 ----
 
 
+Querying
+~~~~~~~~
+
+Custom lookups for easy querying array fields are only available for
+django >= 1.7. For other django versions, `queryset.extra()` should
+be used for these purpose.
+
+
+contains
+^^^^^^^^
+
+The contains lookup is overridden on ArrayField. The returned objects will be
+those where the values passed are a subset of the data. It uses @> operator:
+
+[source, pycon]
+----
+>>> Page.objects.create(name="First page", tags=["foo", "bar"])
+>>> Page.objects.create(name="Second page", tags=["foo"])
+>>> Page.objects.filter(tags__contains=["foo"])
+[<Page: First page>, <Page: Second page>]
+----
+
+
+contained_by
+^^^^^^^^^^^^
+
+This is the inverse of the contains lookup - the objects returned will be those
+where the data is a subset of the values passed. It uses <@ operator:
+
+[source, pycon]
+----
+>>> Page.objects.create(name="First page", tags=["foo", "bar"])
+>>> Page.objects.create(name="Second page", tags=["foo"])
+>>> Page.objects.filter(tags__contained_by=["foo", "bar"])
+[<Page: First page>, <Page: Second page>]
+----
+
+
+overlap
+^^^^^^^
+
+Returns objects where the data shares any results with the values passed.
+It uses the && operator:
+
+[source, pycon]
+----
+>>> Page.objects.create(name="First page", tags=["foo", "bar"])
+>>> Page.objects.create(name="Second page", tags=["foo"])
+>>> Page.objects.filter(tags__overlap=["foo"])
+[<Page: First page>, <Page: Second page>]
+----
+
+
+len
+^^^
+
+Returns the length of the array
+
+[source, pycon]
+----
+>>> Page.objects.create(name="First page", tags=["foo", "bar"])
+>>> Page.objects.create(name="Second page", tags=["foo"])
+>>> Page.objects.filter(tags__len=1)
+[<Page: Second page>]
+----
+
+
+index & slice
+^^^^^^^^^^^^^
+
+Allow search by array index:
+
+[source, pycon]
+----
+>>> Page.objects.create(name="First page", tags=["foo", "bar"])
+>>> Page.objects.create(name="Second page", tags=["foo"])
+>>> Page.objects.filter(tags__0="foo")
+[<Page: First page>, <Page: Second page>]
+----
+
+
+And allow you to take a slice of the array:
+
+[source, pycon]
+----
+>>> Page.objects.create(name="First page", tags=["foo", "bar"])
+>>> Page.objects.create(name="Second page", tags=["foo"])
+>>> Page.objects.filter(tags__0_1=["foo"])
+[<Page: First page>]
+----
+
 Api Reference
 -------------
 
