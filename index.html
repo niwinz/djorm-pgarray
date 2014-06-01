@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="generator" content="AsciiDoc 8.6.9">
-<title>djorm-ext-pgarray documentation</title>
+<title>djorm-pgarray documentation</title>
 <link rel="stylesheet" href="static/niwi.css" type="text/css">
 <link rel="stylesheet" href="static/pygments.css" type="text/css">
 
@@ -18,7 +18,7 @@ asciidoc.install(2);
 </head>
 <body class="article" style="max-width:800px">
 <div id="header">
-<h1>djorm-ext-pgarray documentation</h1>
+<h1>djorm-pgarray documentation</h1>
 <span id="author">Andrey Antukh,</span><br>
 <span id="email" class="monospaced">&lt;<a href="mailto:niwi@niwi.be">niwi@niwi.be</a>&gt;</span><br>
 <span id="revnumber">version 1.0.1,</span>
@@ -35,6 +35,18 @@ asciidoc.install(2);
 <div class="paragraph"><p>Django by default, has a large collection of possible types that can be used to define the
 model. But sometimes we need to use some more complex types offered by PostgreSQL. In this
 case, we will look the integrating of PostgreSQL array with Django.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="paragraph"><p>This package is renamed from <strong>djorm-ext-pgarray</strong> to <strong>djorm-pgarray</strong>.</p></div>
+<div class="paragraph"><p>Api and import statements are not changed. Only python package index toplevel
+package name is changed.</p></div>
+</td>
+</tr></table>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -91,9 +103,9 @@ Multiple dimensions arrays.
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_installation">Installation</h3>
-<div class="paragraph"><p>The simplest way to install <strong>djorm-ext-pgarray</strong> is using <strong>pip</strong>:</p></div>
+<div class="paragraph"><p>The simplest way to install <strong>djorm-pgarray</strong> is using <strong>pip</strong>:</p></div>
 <div class="listingblock">
-<div class="content"><div class="highlight"><pre>pip install djorm-ext-pgarray
+<div class="content"><div class="highlight"><pre>pip install djorm-pgarray
 </pre></div></div></div>
 </div>
 <div class="sect2">
@@ -124,7 +136,7 @@ field:</p></div>
 <div class="sect2">
 <h3 id="_arrays_with_multiple_dimensions">Arrays with multiple dimensions</h3>
 <div class="paragraph"><p>PostgreSQL also has support for arrays with multiple dimensions, and you can use
-them with <strong>djorm-ext-pgarray</strong>:</p></div>
+them with <strong>djorm-pgarray</strong>:</p></div>
 <div class="listingblock">
 <div class="title">Sample model definition</div>
 <div class="content"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Filter</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
@@ -140,7 +152,7 @@ them with <strong>djorm-ext-pgarray</strong>:</p></div>
 </div>
 <div class="sect2">
 <h3 id="_not_defaultly_supported_types">Not defaultly supported types</h3>
-<div class="paragraph"><p><strong>djorm-ext-pgarray</strong> comes with limited set of supported types, but it can be extended
+<div class="paragraph"><p><strong>djorm-pgarray</strong> comes with limited set of supported types, but it can be extended
 for use with different types. In this case we go to use bytea arrays.</p></div>
 <div class="listingblock">
 <div class="title">Simple model definition</div>
@@ -468,7 +480,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <div id="footer">
 <div id="footer-text">
 Version 1.0.1<br>
-Last updated 2014-06-01 20:35:36 CEST
+Last updated 2014-06-01 21:00:03 CEST
 </div>
 </div>
 </body>
