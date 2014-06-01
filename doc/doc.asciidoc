@@ -261,16 +261,17 @@ The rest of ArrayField subclasses are simple aliases with corresponding `dbtype`
 Changelog
 ---------
 
-Version 0.11
-~~~~~~~~~~~~
+Version 1.0
+~~~~~~~~~~~
 
 - Improvements on formfields. (Carl Meyer)
 - Improvements on django 1.7 support. (Carl Meyer)
+- Improvements on django 1.7 custom lookups.
 - Improvements on type casting (Carl Meyer)
 - Default aliases for most common types.
 - New documentation.
 - Python3 fixes.
-
+- Package renamed to djorm-pgarray.
 
 Version 0.10
 ~~~~~~~~~~~~
