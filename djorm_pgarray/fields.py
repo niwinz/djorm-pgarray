@@ -131,6 +131,26 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     def db_type(self, connection):
         return "{0}{1}".format(self._array_type, "[]" * self._dimension)
 
+    def get_transform(self, name):
+        transform = super(ArrayField, self).get_transform(name)
+
+        if transform:
+            return transform
+        try:
+            index = int(name)
+        except ValueError:
+            pass
+        else:
+            index += 1  # postgres uses 1-indexing
+            return IndexTransformFactory(index, self)
+        try:
+            start, end = name.split('_')
+            start = int(start) + 1
+            end = int(end)  # don't add one here because postgres slices are weird
+        except ValueError:
+            pass
+        else:
+            return SliceTransformFactory(start, end)
 
 class IntegerArrayField(ArrayField):
     def __init__(self, *args, **kwargs):
@@ -219,7 +239,7 @@ class ArrayFormField(forms.Field):
 
 
 if django.VERSION[:2] >= (1, 7):
-    from django.db.models import Lookup
+    from django.db.models import Lookup, Transform
 
     class ContainsLookup(Lookup):
         lookup_name = "contains"
@@ -248,10 +268,73 @@ if django.VERSION[:2] >= (1, 7):
             params = lhs_params + rhs_params
             return "%s && %s" % (lhs, rhs), params
 
-    from django.db.models.fields import Field
-    Field.register_lookup(ContainedByLookup)
-    Field.register_lookup(ContainsLookup)
-    Field.register_lookup(OverlapLookip)
+
+    class ArrayLenTransform(Transform):
+        lookup_name = 'len'
+
+        @property
+        def output_type(self):
+            return models.IntegerField()
+
+        def as_sql(self, qn, connection):
+            lhs, params = qn.compile(self.lhs)
+            return 'array_length(%s, 1)' % lhs, params
+
+
+    ArrayField.register_lookup(ContainedByLookup)
+    ArrayField.register_lookup(ContainsLookup)
+    ArrayField.register_lookup(OverlapLookip)
+    ArrayField.register_lookup(ArrayLenTransform)
+
+    class IndexTransform(Transform):
+        def __init__(self, index, field, *args, **kwargs):
+            super(IndexTransform, self).__init__(*args, **kwargs)
+            self.index = index
+            self.field = field
+
+        def as_sql(self, qn, connection):
+            lhs, params = qn.compile(self.lhs)
+            return '%s[%s]' % (lhs, self.index), params
+
+        # TODO: Temporary not supported nested index lookup
+        # @property
+        # def output_type(self):
+        #     output_type = self.field.__class__(dimension=self.field._dimension-1)
+        #     output_type._array_type = self.field._array_type
+        #     output_type._explicit_type_cast = self.field._explicit_type_cast
+        #     output_type._type_cast = self.field._type_cast
+        #     output_type.set_attributes_from_name(self.field.name)
+        #     return output_type
+
+
+    class SliceTransform(Transform):
+        def __init__(self, start, end, *args, **kwargs):
+            super(SliceTransform, self).__init__(*args, **kwargs)
+            self.start = start
+            self.end = end
+
+        def as_sql(self, qn, connection):
+            lhs, params = qn.compile(self.lhs)
+            return '%s[%s:%s]' % (lhs, self.start, self.end), params
+
+
+    class IndexTransformFactory(object):
+        def __init__(self, index, field):
+            self.index = index
+            self.field = field
+
+        def __call__(self, *args, **kwargs):
+            return IndexTransform(self.index, self.field, *args, **kwargs)
+
+
+    class SliceTransformFactory(object):
+        def __init__(self, start, end):
+            self.start = start
+            self.end = end
+
+        def __call__(self, *args, **kwargs):
+            return SliceTransform(self.start, self.end, *args, **kwargs)
+
 
 
 # South support
