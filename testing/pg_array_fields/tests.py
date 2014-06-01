@@ -240,7 +240,7 @@ class ArrayFieldTests(TestCase):
 
 
 if django.VERSION[:2] >= (1, 7):
-    class ArrayLookupsFieldTests(TestCase):
+    class AdditionalArrayFieldTests(TestCase):
         def setUp(self):
             IntModel.objects.all().delete()
 
