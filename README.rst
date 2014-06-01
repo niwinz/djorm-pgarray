@@ -1,6 +1,8 @@
 djorm-ext-pgarray
 =================
 
+NOTE: pypi package name changed from `djorm-ext-pgarray` to more simple `djorm-pgarray`
+
 PostgreSQL array field for Django.
 
 .. image:: https://img.shields.io/travis/niwibe/djorm-pgarray.svg?style=flat
