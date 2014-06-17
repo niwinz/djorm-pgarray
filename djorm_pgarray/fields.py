@@ -259,7 +259,7 @@ if django.VERSION[:2] >= (1, 7):
             params = lhs_params + rhs_params
             return "%s <@ %s" % (lhs, rhs), params
 
-    class OverlapLookip(Lookup):
+    class OverlapLookup(Lookup):
         lookup_name = "overlap"
 
         def as_sql(self, qn, connection):
@@ -283,7 +283,7 @@ if django.VERSION[:2] >= (1, 7):
 
     ArrayField.register_lookup(ContainedByLookup)
     ArrayField.register_lookup(ContainsLookup)
-    ArrayField.register_lookup(OverlapLookip)
+    ArrayField.register_lookup(OverlapLookup)
     ArrayField.register_lookup(ArrayLenTransform)
 
     class IndexTransform(Transform):
