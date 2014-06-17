@@ -1,7 +1,7 @@
 djorm-pgarray documentation
 ===========================
 Andrey Antukh, <niwi@niwi.be>
-1.0.1, 2014-05-28
+1.0.2, 2014-06-16
 
 :toc:
 
@@ -260,6 +260,11 @@ The rest of ArrayField subclasses are simple aliases with corresponding `dbtype`
 
 Changelog
 ---------
+
+Version 1.0.2
+~~~~~~~~~~~~~
+
+- Revert changes for defaults introduced in previous version.
 
 Version 1.0.1
 ~~~~~~~~~~~~~

@@ -48,6 +48,8 @@ def _unserialize(value):
 
 
 class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
+    empty_strings_allowed = False
+
     def __init__(self, *args, **kwargs):
         self._array_type = kwargs.pop("dbtype", "int")
         type_key = self._array_type.split("(")[0]
@@ -100,14 +102,6 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         value = self._get_val_from_obj(obj)
         return json.dumps(self.get_prep_value(value),
                           cls=DjangoJSONEncoder)
-    def get_default(self):
-        if not self.has_default():
-            return None
-
-        if callable(self.default):
-            return self.default()
-
-        return self.default
 
     def validate(self, value, model_instance):
         for val in value:
