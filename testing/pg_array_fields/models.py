@@ -17,7 +17,6 @@ class Item(models.Model):
 class Item2(models.Model):
     tags = TextArrayField(default=[])
 
-
 class IntModel(models.Model):
     field = IntegerArrayField()
     field2 = IntegerArrayField(dimension=2)

@@ -100,6 +100,14 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         value = self._get_val_from_obj(obj)
         return json.dumps(self.get_prep_value(value),
                           cls=DjangoJSONEncoder)
+    def get_default(self):
+        if not self.has_default():
+            return None
+
+        if callable(self.default):
+            return self.default()
+
+        return self.default
 
     def validate(self, value, model_instance):
         for val in value:
