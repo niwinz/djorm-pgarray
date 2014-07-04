@@ -87,7 +87,7 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
 
     def get_db_prep_value(self, value, connection, prepared=False):
         value = value if prepared else self.get_prep_value(value)
-        if not value:
+        if not value or isinstance(value, six.string_types):
             return value
         return _cast_to_type(value, self._type_cast)
 
