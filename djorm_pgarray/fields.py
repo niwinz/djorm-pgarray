@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import json
 
 import django
@@ -154,6 +153,7 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         else:
             return SliceTransformFactory(start, end)
 
+
 class IntegerArrayField(ArrayField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("dbtype", "int")
@@ -230,14 +230,13 @@ class ArrayFormField(forms.Field):
         return value
 
     def prepare_value(self, value):
-        if value:
+        if value or isinstance(value, (list, tuple)):  # if blank list/tuple return ''
             return self.delim.join(force_text(v) for v in value)
 
         return super(ArrayFormField, self).prepare_value(value)
 
     def to_python(self, value):
         return value.split(self.delim)
-
 
 
 if django.VERSION[:2] >= (1, 7):
@@ -270,7 +269,6 @@ if django.VERSION[:2] >= (1, 7):
             params = lhs_params + rhs_params
             return "%s && %s" % (lhs, rhs), params
 
-
     class ArrayLenTransform(Transform):
         lookup_name = 'len'
 
@@ -281,7 +279,6 @@ if django.VERSION[:2] >= (1, 7):
         def as_sql(self, qn, connection):
             lhs, params = qn.compile(self.lhs)
             return 'array_length(%s, 1)' % lhs, params
-
 
     ArrayField.register_lookup(ContainedByLookup)
     ArrayField.register_lookup(ContainsLookup)
@@ -308,7 +305,6 @@ if django.VERSION[:2] >= (1, 7):
         #     output_type.set_attributes_from_name(self.field.name)
         #     return output_type
 
-
     class SliceTransform(Transform):
         def __init__(self, start, end, *args, **kwargs):
             super(SliceTransform, self).__init__(*args, **kwargs)
@@ -319,7 +315,6 @@ if django.VERSION[:2] >= (1, 7):
             lhs, params = qn.compile(self.lhs)
             return '%s[%s:%s]' % (lhs, self.start, self.end), params
 
-
     class IndexTransformFactory(object):
         def __init__(self, index, field):
             self.index = index
@@ -327,7 +322,6 @@ if django.VERSION[:2] >= (1, 7):
 
         def __call__(self, *args, **kwargs):
             return IndexTransform(self.index, self.field, *args, **kwargs)
-
 
     class SliceTransformFactory(object):
         def __init__(self, start, end):
@@ -338,13 +332,12 @@ if django.VERSION[:2] >= (1, 7):
             return SliceTransform(self.start, self.end, *args, **kwargs)
 
 
-
 # South support
 try:
     from south.modelsinspector import add_introspection_rules
     add_introspection_rules([
         (
-            [ArrayField], # class
+            [ArrayField],  # class
             [],           # positional params
             {
                 "dbtype": ["_array_type", {"default": "int"}],
@@ -354,7 +347,7 @@ try:
     ], ["^djorm_pgarray\.fields\.ArrayField"])
     add_introspection_rules([
         (
-            [TextArrayField], # class
+            [TextArrayField],  # class
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
@@ -363,7 +356,7 @@ try:
     ], ["^djorm_pgarray\.fields\.TextArrayField"])
     add_introspection_rules([
         (
-            [FloatArrayField], # class
+            [FloatArrayField],  # class
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
@@ -372,7 +365,7 @@ try:
     ], ["^djorm_pgarray\.fields\.FloatArrayField"])
     add_introspection_rules([
         (
-            [IntegerArrayField], # class
+            [IntegerArrayField],  # class
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
@@ -381,7 +374,7 @@ try:
     ], ["^djorm_pgarray\.fields\.IntegerArrayField"])
     add_introspection_rules([
         (
-            [BigIntegerArrayField], # class
+            [BigIntegerArrayField],  # class
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
@@ -390,7 +383,7 @@ try:
     ], ["^djorm_pgarray\.fields\.BigIntegerArrayField"])
     add_introspection_rules([
         (
-            [SmallIntegerArrayField], # class
+            [SmallIntegerArrayField],  # class
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
@@ -399,7 +392,7 @@ try:
     ], ["^djorm_pgarray\.fields\.SmallIntegerArrayField"])
     add_introspection_rules([
         (
-            [DateTimeArrayField], # class
+            [DateTimeArrayField],  # class
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
@@ -408,7 +401,7 @@ try:
     ], ["^djorm_pgarray\.fields\.DateTimeArrayField"])
     add_introspection_rules([
         (
-            [DateArrayField], # class
+            [DateArrayField],  # class
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
