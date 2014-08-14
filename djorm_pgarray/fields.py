@@ -230,9 +230,8 @@ class ArrayFormField(forms.Field):
         return value
 
     def prepare_value(self, value):
-        if value or isinstance(value, (list, tuple)):  # if blank list/tuple return ''
+        if isinstance(value, (list, tuple)):  # if blank list/tuple return ''
             return self.delim.join(force_text(v) for v in value)
-
         return super(ArrayFormField, self).prepare_value(value)
 
     def to_python(self, value):
