@@ -1,7 +1,7 @@
 djorm-pgarray documentation
 ===========================
 Andrey Antukh, <niwi@niwi.be>
-1.0.2, 2014-06-16
+1.0.3, 2014-08-15
 
 :toc:
 
