@@ -1,7 +1,8 @@
-# -*- coding: utf-8 -*-
-import json
+# -*- encoding: utf-8 -*-
 
+import json
 import django
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
@@ -69,19 +70,19 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         super(ArrayField, self).__init__(*args, **kwargs)
 
     def get_db_prep_lookup(self, lookup_type, value, connection, prepared=False):
-        if lookup_type == 'contains':
+        if lookup_type == "contains":
             return [self.get_prep_value(value)]
         return super(ArrayField, self).get_db_prep_lookup(lookup_type, value, connection, prepared)
 
     def formfield(self, **params):
-        params.setdefault('form_class', ArrayFormField)
+        params.setdefault("form_class", ArrayFormField)
 
         # Django 1.5 does not support "choices_form_class" parameter
         if django.VERSION[:2] >= (1, 6):
-            params.setdefault('choices_form_class', forms.TypedMultipleChoiceField)
+            params.setdefault("choices_form_class", forms.TypedMultipleChoiceField)
             if self.choices:
-                params.setdefault('choices', self.get_choices(include_blank=False))
-                params.setdefault('coerce', self._type_cast)
+                params.setdefault("choices", self.get_choices(include_blank=False))
+                params.setdefault("coerce", self._type_cast)
 
         return super(ArrayField, self).formfield(**params)
 
@@ -145,7 +146,7 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
             index += 1  # postgres uses 1-indexing
             return IndexTransformFactory(index, self)
         try:
-            start, end = name.split('_')
+            start, end = name.split("_")
             start = int(start) + 1
             end = int(end)  # don't add one here because postgres slices are weird
         except ValueError:
@@ -269,7 +270,7 @@ if django.VERSION[:2] >= (1, 7):
             return "%s && %s" % (lhs, rhs), params
 
     class ArrayLenTransform(Transform):
-        lookup_name = 'len'
+        lookup_name = "len"
 
         @property
         def output_type(self):
@@ -277,7 +278,7 @@ if django.VERSION[:2] >= (1, 7):
 
         def as_sql(self, qn, connection):
             lhs, params = qn.compile(self.lhs)
-            return 'array_length(%s, 1)' % lhs, params
+            return "array_length(%s, 1)" % lhs, params
 
     ArrayField.register_lookup(ContainedByLookup)
     ArrayField.register_lookup(ContainsLookup)
@@ -292,7 +293,7 @@ if django.VERSION[:2] >= (1, 7):
 
         def as_sql(self, qn, connection):
             lhs, params = qn.compile(self.lhs)
-            return '%s[%s]' % (lhs, self.index), params
+            return "%s[%s]" % (lhs, self.index), params
 
         # TODO: Temporary not supported nested index lookup
         # @property
@@ -312,7 +313,7 @@ if django.VERSION[:2] >= (1, 7):
 
         def as_sql(self, qn, connection):
             lhs, params = qn.compile(self.lhs)
-            return '%s[%s:%s]' % (lhs, self.start, self.end), params
+            return "%s[%s:%s]" % (lhs, self.start, self.end), params
 
     class IndexTransformFactory(object):
         def __init__(self, index, field):
