@@ -342,6 +342,7 @@ try:
             {
                 "dbtype": ["_array_type", {"default": "int"}],
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.ArrayField"])
@@ -351,6 +352,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.TextArrayField"])
@@ -360,6 +362,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.FloatArrayField"])
@@ -369,6 +372,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.IntegerArrayField"])
@@ -378,6 +382,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.BigIntegerArrayField"])
@@ -387,6 +392,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.SmallIntegerArrayField"])
@@ -396,6 +402,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.DateTimeArrayField"])
@@ -405,6 +412,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.DateArrayField"])
