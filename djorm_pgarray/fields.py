@@ -6,6 +6,7 @@ import django
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core import validators
 from django.db import models
 from django.utils import six
 from django.utils.encoding import force_text
@@ -104,6 +105,12 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
                           cls=DjangoJSONEncoder)
 
     def validate(self, value, model_instance):
+        if value is None and not self.null:
+            raise ValidationError(self.error_messages['null'])
+
+        if not self.blank and value in validators.EMPTY_VALUES:
+            raise ValidationError(self.error_messages['blank'])
+
         for val in value:
             super(ArrayField, self).validate(val, model_instance)
 
@@ -342,6 +349,7 @@ try:
             {
                 "dbtype": ["_array_type", {"default": "int"}],
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.ArrayField"])
@@ -351,6 +359,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.TextArrayField"])
@@ -360,6 +369,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.FloatArrayField"])
@@ -369,6 +379,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.IntegerArrayField"])
@@ -378,6 +389,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.BigIntegerArrayField"])
@@ -387,6 +399,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.SmallIntegerArrayField"])
@@ -396,6 +409,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.DateTimeArrayField"])
@@ -405,6 +419,7 @@ try:
             [],           # positional params
             {
                 "dimension": ["_dimension", {"default": 1}],
+                "null": ["null", {"default": True}],
             }
         )
     ], ["^djorm_pgarray\.fields\.DateArrayField"])
