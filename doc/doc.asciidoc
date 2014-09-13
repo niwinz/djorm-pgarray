@@ -261,6 +261,16 @@ The rest of ArrayField subclasses are simple aliases with corresponding `dbtype`
 Changelog
 ---------
 
+Version 1.0.4
+~~~~~~~~~~~~~
+
+- Improved south support (fixing wrong null handling)
+
+Version 1.0.3
+~~~~~~~~~~~~~
+
+- Proper handling default values.
+
 Version 1.0.2
 ~~~~~~~~~~~~~
 
