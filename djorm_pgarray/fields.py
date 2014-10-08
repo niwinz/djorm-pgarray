@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+from collections import Iterable
 import json
 import django
 
@@ -94,7 +95,7 @@ class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
         return _cast_to_type(value, self._type_cast)
 
     def get_prep_value(self, value):
-        return value
+        return value if isinstance(value, (six.string_types, list,)) or not isinstance(value, Iterable) else list(value)
 
     def to_python(self, value):
         return _unserialize(value)
