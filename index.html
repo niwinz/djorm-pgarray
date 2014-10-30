@@ -21,8 +21,8 @@ asciidoc.install(2);
 <h1>djorm-pgarray documentation</h1>
 <span id="author">Andrey Antukh,</span><br>
 <span id="email" class="monospaced">&lt;<a href="mailto:niwi@niwi.be">niwi@niwi.be</a>&gt;</span><br>
-<span id="revnumber">version 1.0.4,</span>
-<span id="revdate">2014-09-13</span>
+<span id="revnumber">version 1.1.0,</span>
+<span id="revdate">2014-10-30</span>
 <div id="toc">
   <div id="toctitle">Table of Contents</div>
   <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
@@ -30,7 +30,7 @@ asciidoc.install(2);
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_introduction">Introduction</h2>
+<h2 id="_introduction">1. Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Django by default, has a large collection of possible types that can be used to define the
 model. But sometimes we need to use some more complex types offered by PostgreSQL. In this
@@ -50,7 +50,7 @@ package name is changed.</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_requirements">Requirements</h2>
+<h2 id="_requirements">2. Requirements</h2>
 <div class="sectionbody">
 <div class="ulist"><ul>
 <li>
@@ -72,7 +72,7 @@ Psycopg2 &gt;= 2.5.0
 </div>
 </div>
 <div class="sect1">
-<h2 id="_features">Features</h2>
+<h2 id="_features">3. Features</h2>
 <div class="sectionbody">
 <div class="ulist"><ul>
 <li>
@@ -99,21 +99,21 @@ Multiple dimensions arrays.
 </div>
 </div>
 <div class="sect1">
-<h2 id="_user_guide">User guide</h2>
+<h2 id="_user_guide">4. User guide</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_installation">Installation</h3>
+<h3 id="_installation">4.1. Installation</h3>
 <div class="paragraph"><p>The simplest way to install <strong>djorm-pgarray</strong> is using <strong>pip</strong>:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre>pip install djorm-pgarray
 </pre></div></div></div>
 </div>
 <div class="sect2">
-<h3 id="_configure">Configure</h3>
+<h3 id="_configure">4.2. Configure</h3>
 <div class="paragraph"><p>Nothing to configure, use field as is. How you are using any other django builtin model field.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_quick_start">Quick start</h3>
+<h3 id="_quick_start">4.3. Quick start</h3>
 <div class="paragraph"><p>This is a sample definition of model using a ArrayField:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
@@ -134,7 +134,7 @@ field:</p></div>
 </pre></div></div></div>
 </div>
 <div class="sect2">
-<h3 id="_arrays_with_multiple_dimensions">Arrays with multiple dimensions</h3>
+<h3 id="_arrays_with_multiple_dimensions">4.4. Arrays with multiple dimensions</h3>
 <div class="paragraph"><p>PostgreSQL also has support for arrays with multiple dimensions, and you can use
 them with <strong>djorm-pgarray</strong>:</p></div>
 <div class="listingblock">
@@ -151,7 +151,7 @@ them with <strong>djorm-pgarray</strong>:</p></div>
 </pre></div></div></div>
 </div>
 <div class="sect2">
-<h3 id="_not_defaultly_supported_types">Not defaultly supported types</h3>
+<h3 id="_not_defaultly_supported_types">4.5. Not defaultly supported types</h3>
 <div class="paragraph"><p><strong>djorm-pgarray</strong> comes with limited set of supported types, but it can be extended
 for use with different types. In this case we go to use bytea arrays.</p></div>
 <div class="listingblock">
@@ -170,12 +170,12 @@ for use with different types. In this case we go to use bytea arrays.</p></div>
 </pre></div></div></div>
 </div>
 <div class="sect2">
-<h3 id="_querying">Querying</h3>
+<h3 id="_querying">4.6. Querying</h3>
 <div class="paragraph"><p>Custom lookups for easy querying array fields are only available for
 django &gt;= 1.7. For other django versions, <span class="monospaced">queryset.extra()</span> should
 be used for these purpose.</p></div>
 <div class="sect3">
-<h4 id="_contains">contains</h4>
+<h4 id="_contains">4.6.1. contains</h4>
 <div class="paragraph"><p>The contains lookup is overridden on ArrayField. The returned objects will be
 those where the values passed are a subset of the data. It uses @&gt; operator:</p></div>
 <div class="listingblock">
@@ -186,7 +186,7 @@ those where the values passed are a subset of the data. It uses @&gt; operator:<
 </pre></div></div></div>
 </div>
 <div class="sect3">
-<h4 id="_contained_by">contained_by</h4>
+<h4 id="_contained_by">4.6.2. contained_by</h4>
 <div class="paragraph"><p>This is the inverse of the contains lookup - the objects returned will be those
 where the data is a subset of the values passed. It uses &lt;@ operator:</p></div>
 <div class="listingblock">
@@ -197,7 +197,7 @@ where the data is a subset of the values passed. It uses &lt;@ operator:</p></di
 </pre></div></div></div>
 </div>
 <div class="sect3">
-<h4 id="_overlap">overlap</h4>
+<h4 id="_overlap">4.6.3. overlap</h4>
 <div class="paragraph"><p>Returns objects where the data shares any results with the values passed.
 It uses the &amp;&amp; operator:</p></div>
 <div class="listingblock">
@@ -208,7 +208,7 @@ It uses the &amp;&amp; operator:</p></div>
 </pre></div></div></div>
 </div>
 <div class="sect3">
-<h4 id="_len">len</h4>
+<h4 id="_len">4.6.4. len</h4>
 <div class="paragraph"><p>Returns the length of the array</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Page</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;First page&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="s">&quot;bar&quot;</span><span class="p">])</span>
@@ -218,7 +218,7 @@ It uses the &amp;&amp; operator:</p></div>
 </pre></div></div></div>
 </div>
 <div class="sect3">
-<h4 id="_index_amp_slice">index &amp; slice</h4>
+<h4 id="_index_amp_slice">4.6.5. index &amp; slice</h4>
 <div class="paragraph"><p>Allow search by array index:</p></div>
 <div class="listingblock">
 <div class="content"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Page</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;First page&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="s">&quot;bar&quot;</span><span class="p">])</span>
@@ -238,7 +238,7 @@ It uses the &amp;&amp; operator:</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_api_reference">Api Reference</h2>
+<h2 id="_api_reference">5. Api Reference</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>This is a list of available fields:</p></div>
 <div class="ulist"><ul>
@@ -284,7 +284,7 @@ It uses the &amp;&amp; operator:</p></div>
 </li>
 </ul></div>
 <div class="sect2">
-<h3 id="_span_class_monospaced_arrayfield_span"><span class="monospaced">ArrayField</span></h3>
+<h3 id="_span_class_monospaced_arrayfield_span">5.1. <span class="monospaced">ArrayField</span></h3>
 <div class="paragraph"><p>Is a generic/base field which inherited by the rest, and accept the following parameters:</p></div>
 <div class="ulist"><ul>
 <li>
@@ -308,10 +308,30 @@ It uses the &amp;&amp; operator:</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_changelog">Changelog</h2>
+<h2 id="_changelog">6. Changelog</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_version_1_0_4">Version 1.0.4</h3>
+<h3 id="_version_1_1_0">6.1. Version 1.1.0</h3>
+<div class="ulist"><ul>
+<li>
+<p>
+Reorganization of tests.
+</p>
+</li>
+<li>
+<p>
+Substrings lookup
+</p>
+</li>
+<li>
+<p>
+Other bugfixes.
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect2">
+<h3 id="_version_1_0_4">6.2. Version 1.0.4</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -321,7 +341,7 @@ Improved south support (fixing wrong null handling)
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_1_0_3">Version 1.0.3</h3>
+<h3 id="_version_1_0_3">6.3. Version 1.0.3</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -331,7 +351,7 @@ Proper handling default values.
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_1_0_2">Version 1.0.2</h3>
+<h3 id="_version_1_0_2">6.4. Version 1.0.2</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -341,7 +361,7 @@ Revert changes for defaults introduced in previous version.
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_1_0_1">Version 1.0.1</h3>
+<h3 id="_version_1_0_1">6.5. Version 1.0.1</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -356,7 +376,7 @@ Fixed some typo&#8217;s on class names.
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_1_0">Version 1.0</h3>
+<h3 id="_version_1_0">6.6. Version 1.0</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -401,7 +421,7 @@ Package renamed to djorm-pgarray.
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_0_10">Version 0.10</h3>
+<h3 id="_version_0_10">6.7. Version 0.10</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -431,7 +451,7 @@ Python 3 support.
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_0_9">Version 0.9</h3>
+<h3 id="_version_0_9">6.8. Version 0.9</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -446,7 +466,7 @@ Allow use self defined types.
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_0_8">Version 0.8</h3>
+<h3 id="_version_0_8">6.9. Version 0.8</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -461,7 +481,7 @@ Sphinx documentation
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_0_7">Version 0.7</h3>
+<h3 id="_version_0_7">6.10. Version 0.7</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -476,7 +496,7 @@ Bugfixes for form field.
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_0_6">Version 0.6</h3>
+<h3 id="_version_0_6">6.11. Version 0.6</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -486,7 +506,7 @@ Add admin form field.
 </ul></div>
 </div>
 <div class="sect2">
-<h3 id="_version_0_5">Version 0.5</h3>
+<h3 id="_version_0_5">6.12. Version 0.5</h3>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -498,7 +518,7 @@ Add python3 suppot (thanks to @dstufft).
 </div>
 </div>
 <div class="sect1">
-<h2 id="_license">License</h2>
+<h2 id="_license">7. License</h2>
 <div class="sectionbody">
 <div class="listingblock">
 <div class="title"><a id="license"></a></div>
@@ -534,8 +554,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <div id="footnotes"><hr></div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.4<br>
-Last updated 2014-09-13 10:41:45 CEST
+Version 1.1.0<br>
+Last updated 2014-10-30 21:21:28 CET
 </div>
 </div>
 </body>
