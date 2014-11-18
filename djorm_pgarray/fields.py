@@ -52,20 +52,20 @@ def _unserialize(value):
 class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     empty_strings_allowed = False
 
-    def __init__(self, *args, **kwargs):
-        self._array_type = kwargs.pop("dbtype", "int")
+    def __init__(self, dbtype=int, type_cast=None, dimension=1, *args, **kwargs):
+        self._array_type = dbtype
         type_key = self._array_type.split("(")[0]
 
         self._explicit_type_cast = False
-        if "type_cast" in kwargs:
-            self._type_cast = kwargs.pop("type_cast")
+        if type_cast is not None:
+            self._type_cast = type_cast
             self._explicit_type_cast = True
         elif type_key in TYPES:
             self._type_cast = TYPES[type_key]
         else:
             self._type_cast = lambda x: x
 
-        self._dimension = kwargs.pop("dimension", 1)
+        self._dimension = dimension
         kwargs.setdefault("blank", True)
         kwargs.setdefault("null", True)
         kwargs.setdefault("default", None)
