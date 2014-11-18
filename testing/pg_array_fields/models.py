@@ -9,13 +9,16 @@ from djorm_pgarray.fields import DateArrayField
 from djorm_pgarray.fields import DateTimeArrayField
 from djorm_pgarray.fields import SmallIntegerArrayField
 
+def defaultval(*args, **kwargs):
+    return []
 
 class Item(models.Model):
-    tags = TextArrayField(default=lambda: [])
+    tags = TextArrayField(default=defaultval)
 
 
 class Item2(models.Model):
     tags = TextArrayField(default=[])
+
 
 class IntModel(models.Model):
     field = IntegerArrayField()

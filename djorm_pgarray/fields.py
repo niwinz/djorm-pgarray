@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+from __future__ import unicode_literals
 
 from collections import Iterable
 import json
@@ -52,7 +52,7 @@ def _unserialize(value):
 class ArrayField(six.with_metaclass(models.SubfieldBase, models.Field)):
     empty_strings_allowed = False
 
-    def __init__(self, dbtype=int, type_cast=None, dimension=1, *args, **kwargs):
+    def __init__(self, dbtype="int", type_cast=None, dimension=1, *args, **kwargs):
         self._array_type = dbtype
         type_key = self._array_type.split("(")[0]
 
