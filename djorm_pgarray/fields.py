@@ -244,6 +244,8 @@ class ArrayFormField(forms.Field):
         return super(ArrayFormField, self).prepare_value(value)
 
     def to_python(self, value):
+        if value is None or value == u"":
+            return []
         return value.split(self.delim)
 
 
