@@ -15,7 +15,7 @@ PostgreSQL array field for Django.
     :target: https://pypi.python.org/pypi/djorm-pgarray
 
 
-**Documentation:** http://niwibe.github.io/djorm-pgarray/
+**Documentation:** http://niwinz.github.io/djorm-pgarray/
 
 
 
