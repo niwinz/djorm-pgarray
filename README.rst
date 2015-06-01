@@ -5,8 +5,8 @@ NOTE: pypi package name changed from `djorm-ext-pgarray` to more simple `djorm-p
 
 PostgreSQL array field for Django.
 
-.. image:: https://img.shields.io/travis/niwibe/djorm-pgarray.svg?style=flat
-    :target: https://travis-ci.org/niwibe/djorm-pgarray
+.. image:: https://img.shields.io/travis/niwinz/djorm-pgarray.svg?style=flat
+    :target: https://travis-ci.org/niwinz/djorm-pgarray
 
 .. image:: https://img.shields.io/pypi/v/djorm-pgarray.svg?style=flat
     :target: https://pypi.python.org/pypi/djorm-pgarray
